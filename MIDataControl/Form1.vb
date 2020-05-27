@@ -16,6 +16,11 @@ Public Class Form1
     End Class
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        HorizontalScroll.Maximum = 0
+        AutoScroll = False
+        VerticalScroll.Visible = False
+        AutoScroll = True
+
         FromDate.Value = DateTime.Today.AddDays(-7)
         ToDate.Value = DateTime.Now
 
@@ -1277,7 +1282,7 @@ Public Class Form1
         newExtract.Amount2 = ""
         newExtract.Amount3 = iSumAmount1
 
-        tbCAB.Text = PenceToCurrencyStringPounds(newExtract.Amount1)
+        tbCAB.Text = PenceToCurrencyStringPounds(iSumAmount1)
 
         iSumAUM = iSumAUM + iSumAmount1
 
@@ -1376,7 +1381,7 @@ Public Class Form1
         newExtract.Amount2 = ""
         newExtract.Amount3 = iSumAmount1
 
-        tbLLB.Text = PenceToCurrencyStringPounds(newExtract.Amount1)
+        tbLLB.Text = PenceToCurrencyStringPounds(iSumAmount1)
 
         iSumAUM = iSumAUM + iSumAmount1
 
@@ -1395,7 +1400,7 @@ Public Class Form1
         newExtract.Amount2 = ""
         newExtract.Amount3 = iSumAUM
 
-        tbAUM.Text = PenceToCurrencyStringPounds(newExtract.Amount1)
+        tbAUM.Text = PenceToCurrencyStringPounds(iSumAUM)
 
 
         Extractlist.Add(newExtract)
@@ -1403,6 +1408,8 @@ Public Class Form1
 
 
     End Sub
+
+
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         Dim xFileName As String
