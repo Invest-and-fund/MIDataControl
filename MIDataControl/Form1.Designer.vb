@@ -151,6 +151,8 @@ Partial Class Form1
         Me.tbTLB = New System.Windows.Forms.TextBox()
         Me.tbAUM = New System.Windows.Forms.TextBox()
         Me.LoadingMessage = New System.Windows.Forms.Label()
+        Me.tbDW = New System.Windows.Forms.TextBox()
+        Me.Label57 = New System.Windows.Forms.Label()
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -346,7 +348,7 @@ Partial Class Form1
         'Label18
         '
         Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(4, 525)
+        Me.Label18.Location = New System.Drawing.Point(4, 564)
         Me.Label18.Name = "Label18"
         Me.Label18.Size = New System.Drawing.Size(134, 13)
         Me.Label18.TabIndex = 47
@@ -355,7 +357,7 @@ Partial Class Form1
         'Label19
         '
         Me.Label19.AutoSize = True
-        Me.Label19.Location = New System.Drawing.Point(35, 501)
+        Me.Label19.Location = New System.Drawing.Point(35, 540)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(98, 13)
         Me.Label19.TabIndex = 46
@@ -364,7 +366,7 @@ Partial Class Form1
         'Label20
         '
         Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(35, 478)
+        Me.Label20.Location = New System.Drawing.Point(35, 517)
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(99, 13)
         Me.Label20.TabIndex = 45
@@ -373,7 +375,7 @@ Partial Class Form1
         'Label21
         '
         Me.Label21.AutoSize = True
-        Me.Label21.Location = New System.Drawing.Point(35, 456)
+        Me.Label21.Location = New System.Drawing.Point(35, 495)
         Me.Label21.Name = "Label21"
         Me.Label21.Size = New System.Drawing.Size(117, 13)
         Me.Label21.TabIndex = 44
@@ -382,7 +384,7 @@ Partial Class Form1
         'Label22
         '
         Me.Label22.AutoSize = True
-        Me.Label22.Location = New System.Drawing.Point(8, 434)
+        Me.Label22.Location = New System.Drawing.Point(8, 473)
         Me.Label22.Name = "Label22"
         Me.Label22.Size = New System.Drawing.Size(79, 13)
         Me.Label22.TabIndex = 43
@@ -936,7 +938,7 @@ Partial Class Form1
         '
         'tbTNM2
         '
-        Me.tbTNM2.Location = New System.Drawing.Point(370, 522)
+        Me.tbTNM2.Location = New System.Drawing.Point(370, 561)
         Me.tbTNM2.Name = "tbTNM2"
         Me.tbTNM2.Size = New System.Drawing.Size(88, 20)
         Me.tbTNM2.TabIndex = 123
@@ -944,7 +946,7 @@ Partial Class Form1
         '
         'tbTNM3
         '
-        Me.tbTNM3.Location = New System.Drawing.Point(469, 522)
+        Me.tbTNM3.Location = New System.Drawing.Point(469, 561)
         Me.tbTNM3.Name = "tbTNM3"
         Me.tbTNM3.Size = New System.Drawing.Size(88, 20)
         Me.tbTNM3.TabIndex = 122
@@ -952,7 +954,7 @@ Partial Class Form1
         '
         'tbTNM1
         '
-        Me.tbTNM1.Location = New System.Drawing.Point(269, 522)
+        Me.tbTNM1.Location = New System.Drawing.Point(269, 561)
         Me.tbTNM1.Name = "tbTNM1"
         Me.tbTNM1.Size = New System.Drawing.Size(93, 20)
         Me.tbTNM1.TabIndex = 121
@@ -960,7 +962,7 @@ Partial Class Form1
         '
         'tbNMI2
         '
-        Me.tbNMI2.Location = New System.Drawing.Point(370, 494)
+        Me.tbNMI2.Location = New System.Drawing.Point(370, 533)
         Me.tbNMI2.Name = "tbNMI2"
         Me.tbNMI2.Size = New System.Drawing.Size(88, 20)
         Me.tbNMI2.TabIndex = 120
@@ -968,7 +970,7 @@ Partial Class Form1
         '
         'tbNMI3
         '
-        Me.tbNMI3.Location = New System.Drawing.Point(469, 494)
+        Me.tbNMI3.Location = New System.Drawing.Point(469, 533)
         Me.tbNMI3.Name = "tbNMI3"
         Me.tbNMI3.Size = New System.Drawing.Size(88, 20)
         Me.tbNMI3.TabIndex = 119
@@ -976,7 +978,7 @@ Partial Class Form1
         '
         'tbNMI1
         '
-        Me.tbNMI1.Location = New System.Drawing.Point(269, 494)
+        Me.tbNMI1.Location = New System.Drawing.Point(269, 533)
         Me.tbNMI1.Name = "tbNMI1"
         Me.tbNMI1.Size = New System.Drawing.Size(93, 20)
         Me.tbNMI1.TabIndex = 118
@@ -984,7 +986,7 @@ Partial Class Form1
         '
         'tbNMS2
         '
-        Me.tbNMS2.Location = New System.Drawing.Point(370, 472)
+        Me.tbNMS2.Location = New System.Drawing.Point(370, 511)
         Me.tbNMS2.Name = "tbNMS2"
         Me.tbNMS2.Size = New System.Drawing.Size(88, 20)
         Me.tbNMS2.TabIndex = 117
@@ -992,7 +994,7 @@ Partial Class Form1
         '
         'tbNMS3
         '
-        Me.tbNMS3.Location = New System.Drawing.Point(469, 472)
+        Me.tbNMS3.Location = New System.Drawing.Point(469, 511)
         Me.tbNMS3.Name = "tbNMS3"
         Me.tbNMS3.Size = New System.Drawing.Size(88, 20)
         Me.tbNMS3.TabIndex = 116
@@ -1000,7 +1002,7 @@ Partial Class Form1
         '
         'tbNMS1
         '
-        Me.tbNMS1.Location = New System.Drawing.Point(269, 472)
+        Me.tbNMS1.Location = New System.Drawing.Point(269, 511)
         Me.tbNMS1.Name = "tbNMS1"
         Me.tbNMS1.Size = New System.Drawing.Size(93, 20)
         Me.tbNMS1.TabIndex = 115
@@ -1008,7 +1010,7 @@ Partial Class Form1
         '
         'tbNMT2
         '
-        Me.tbNMT2.Location = New System.Drawing.Point(370, 450)
+        Me.tbNMT2.Location = New System.Drawing.Point(370, 489)
         Me.tbNMT2.Name = "tbNMT2"
         Me.tbNMT2.Size = New System.Drawing.Size(88, 20)
         Me.tbNMT2.TabIndex = 114
@@ -1016,7 +1018,7 @@ Partial Class Form1
         '
         'tbNMT3
         '
-        Me.tbNMT3.Location = New System.Drawing.Point(469, 450)
+        Me.tbNMT3.Location = New System.Drawing.Point(469, 489)
         Me.tbNMT3.Name = "tbNMT3"
         Me.tbNMT3.Size = New System.Drawing.Size(88, 20)
         Me.tbNMT3.TabIndex = 113
@@ -1024,7 +1026,7 @@ Partial Class Form1
         '
         'tbNMT1
         '
-        Me.tbNMT1.Location = New System.Drawing.Point(269, 450)
+        Me.tbNMT1.Location = New System.Drawing.Point(269, 489)
         Me.tbNMT1.Name = "tbNMT1"
         Me.tbNMT1.Size = New System.Drawing.Size(93, 20)
         Me.tbNMT1.TabIndex = 112
@@ -1239,12 +1241,32 @@ Partial Class Form1
         Me.LoadingMessage.TabIndex = 149
         Me.LoadingMessage.Text = "Label57"
         '
+        'tbDW
+        '
+        Me.tbDW.Location = New System.Drawing.Point(469, 421)
+        Me.tbDW.Name = "tbDW"
+        Me.tbDW.Size = New System.Drawing.Size(88, 20)
+        Me.tbDW.TabIndex = 150
+        Me.tbDW.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label57
+        '
+        Me.Label57.AutoSize = True
+        Me.Label57.Location = New System.Drawing.Point(147, 421)
+        Me.Label57.Name = "Label57"
+        Me.Label57.Size = New System.Drawing.Size(316, 39)
+        Me.Label57.TabIndex = 151
+        Me.Label57.Text = "* Includes the following total of identical amounts Deposited and " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Withdrawn fro" &
+    "m the same account within 7 days during this period" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.ClientSize = New System.Drawing.Size(1078, 704)
+        Me.Controls.Add(Me.Label57)
+        Me.Controls.Add(Me.tbDW)
         Me.Controls.Add(Me.LoadingMessage)
         Me.Controls.Add(Me.tbAUM)
         Me.Controls.Add(Me.tbLLB)
@@ -1516,4 +1538,6 @@ Partial Class Form1
     Friend WithEvents tbTLB As TextBox
     Friend WithEvents tbAUM As TextBox
     Friend WithEvents LoadingMessage As Label
+    Friend WithEvents tbDW As TextBox
+    Friend WithEvents Label57 As Label
 End Class

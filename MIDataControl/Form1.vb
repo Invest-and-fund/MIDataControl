@@ -113,6 +113,8 @@ Public Class Form1
 
         SetupNewWithdrawals(startdate, enddate, ExtractList, environ, connection)
 
+        SetupDepositWithdrawals(startdate, enddate, ExtractList, environ, connection)
+
         newExtract = New Extract
         newExtract.Description = "New Mandates "
         newExtract.Amount1 = ""
@@ -479,11 +481,17 @@ Public Class Form1
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
         MySQL = "select sum(f.amount) as theamount 
-                  from fin_trans f , accounts a
+                  from fin_trans f , accounts a, users u
                   where f.transtype = 1100
                    and f.accountid = a.accountid
                    and a.accounttype = @at1
-                   and  f.datecreated < @dt1 "
+                   and  f.datecreated <= @dt1
+                   and f.isactive = 0                  
+                   and f.accountid   >= 2  
+                   and f.accountid   <> 20 
+                   and f.accountid = a.accountid
+                   and a.userid = u.userid                   
+                   and u.usertype <> 1"
 
 
         strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
@@ -521,11 +529,17 @@ Public Class Form1
         dAmount1 = nSumm
 
         MySQL = "select sum(f.amount) as theamount 
-                  from fin_trans f , accounts a
+                  from fin_trans f , accounts a, users u
                   where f.transtype = 1100
                    and f.accountid = a.accountid
                    and a.accounttype = @at1
-                   and  f.datecreated < @dt1"
+                   and  f.datecreated <= @dt1
+                   and f.isactive = 0                  
+                   and f.accountid   >= 2  
+                   and f.accountid   <> 20 
+                   and f.accountid = a.accountid
+                   and a.userid = u.userid                   
+                   and u.usertype <> 1"
 
 
         strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
@@ -583,9 +597,15 @@ Public Class Form1
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
         MySQL = "select sum(f.amount) as theamount 
-                  from fin_trans f 
+                  from fin_trans f, accounts a, users u 
                   where f.transtype = 1102
-                   and  f.datecreated < @dt1 "
+                   and  f.datecreated <= @dt1
+                   and f.isactive = 0                  
+                   and f.accountid   >= 2  
+                   and f.accountid   <> 20 
+                   and f.accountid = a.accountid
+                   and a.userid = u.userid                   
+                   and u.usertype <> 1"
 
 
         strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
@@ -618,9 +638,15 @@ Public Class Form1
         dAmount1 = nSumm
 
         MySQL = "select sum(f.amount) as theamount 
-                  from fin_trans f 
+                  from fin_trans f, accounts a, users u 
                   where f.transtype = 1102
-                   and  f.datecreated < @dt1"
+                   and  f.datecreated <= @dt1
+                   and f.isactive = 0                  
+                   and f.accountid   >= 2  
+                   and f.accountid   <> 20 
+                   and f.accountid = a.accountid
+                   and a.userid = u.userid                   
+                   and u.usertype <> 1"
 
 
         strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
@@ -678,6 +704,81 @@ Public Class Form1
 
 
 
+    End Sub
+
+    Private Sub SetupDepositWithdrawals(startdate As Date, enddate As Date, Extractlist As List(Of Extract), environ As String, connection As String)
+        Dim MySQL, strConn As String
+        Dim dAmount1, dAmount2, dAmount3 As Double
+        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
+        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
+        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+        Dim dr1, dr2, dr3 As DataRow
+        Dim ds1 As DataSet
+        MySQL = "select sum(f.amount) as theamount 
+                  from fin_trans f , accounts a, users u
+                  where f.transtype = 1102
+                   and f.accountid = a.accountid
+                   and f.isactive = 0
+                   and  f.datecreated > @dt1
+                   and f.accountid   >= 2  
+                   and f.accountid   <> 20 
+                   and a.userid = u.userid                   
+                   and u.usertype <> 1
+                   and f.fin_transid in
+              (  select g.fin_transid
+                  from fin_trans f , fin_trans g
+                  where f.transtype = 1100
+                  and g.transtype = 1102
+                  and f.accountid = g.accountid
+                  and f.amount = g.amount
+                  and f.datecreated > dateadd(day, -7, g.datecreated )
+                  and g.datecreated > @dt1
+                  and g.datecreated < @dt2  ) "
+
+
+
+
+        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
+        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
+        MyConn.Open()
+        ds1 = New DataSet
+        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
+        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = startdate
+        Adaptor.SelectCommand.Parameters.Add("@dt2", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
+
+
+        Adaptor.Fill(ds1)
+        MyConn.Close()
+
+        Dim nSumm As Double = 0
+        If ds1.Tables(0).Rows.Count > 0 Then
+            With ds1.Tables(0).Rows(0)
+                nSumm = ds1.Tables(0).Rows(0).Item(“theamount”)
+            End With
+        End If
+
+        Dim newExtract As New Extract
+
+
+
+        newExtract.Description = "Funds withdrawn within one weke of deposit"
+
+
+        newExtract.Amount1 = ""
+        newExtract.Amount2 = ""
+        newExtract.Amount3 = nSumm
+
+
+
+
+
+
+        tbDW.Text = PenceToCurrencyStringPounds(newExtract.Amount3)
+
+
+
+
+        Extractlist.Add(newExtract)
     End Sub
 
     Private Sub SetupNewMandates(startdate As Date, enddate As Date, Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer)
