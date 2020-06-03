@@ -753,7 +753,12 @@ Public Class Form1
         Dim nSumm As Double = 0
         If ds1.Tables(0).Rows.Count > 0 Then
             With ds1.Tables(0).Rows(0)
-                nSumm = ds1.Tables(0).Rows(0).Item(“theamount”)
+                If Not IsDBNull(ds1.Tables(0).Rows(0).Item(“theamount”)) Then
+                    nSumm = ds1.Tables(0).Rows(0).Item(“theamount”)
+                Else
+                    nSumm = 0
+                End If
+
             End With
         End If
 
