@@ -147,9 +147,9 @@ Public Class Form1
         LoadingMessage.Text = "This list takes a while to load - calculating Active Lender total "
         Me.Refresh()
 
-        SetupTotalVolumes(ExtractList, environ, connection, 0)
-        SetupTotalVolumes(ExtractList, environ, connection, 1)
-        SetupTotalVolumes(ExtractList, environ, connection, 2)
+        SetupTotalVolumes(ExtractList, environ, connection, 0, enddate)
+        SetupTotalVolumes(ExtractList, environ, connection, 1, enddate)
+        SetupTotalVolumes(ExtractList, environ, connection, 2, enddate)
 
         SetupTotalVolumesTotal(ExtractList)
 
@@ -165,9 +165,9 @@ Public Class Form1
         LoadingMessage.Text = "This list takes a while to load - calculating Inactive Lender total "
         Me.Refresh()
 
-        SetupInactiveVolumes(ExtractList, environ, connection, 0)
-        SetupInactiveVolumes(ExtractList, environ, connection, 1)
-        SetupInactiveVolumes(ExtractList, environ, connection, 2)
+        SetupInactiveVolumes(ExtractList, environ, connection, 0, enddate)
+        SetupInactiveVolumes(ExtractList, environ, connection, 1, enddate)
+        SetupInactiveVolumes(ExtractList, environ, connection, 2, enddate)
 
         SetupInactiveVolumesTotal(ExtractList)
 
@@ -183,9 +183,9 @@ Public Class Form1
         LoadingMessage.Text = "This list takes a while to load - calculating Active Mandate total "
         Me.Refresh()
 
-        SetupMandatesVolumes(ExtractList, environ, connection, 0)
-        SetupMandatesVolumes(ExtractList, environ, connection, 1)
-        SetupMandatesVolumes(ExtractList, environ, connection, 2)
+        SetupMandatesVolumes(ExtractList, environ, connection, 0, enddate)
+        SetupMandatesVolumes(ExtractList, environ, connection, 1, enddate)
+        SetupMandatesVolumes(ExtractList, environ, connection, 2, enddate)
 
         SetupMandatesVolumesTotal(ExtractList)
 
@@ -201,9 +201,9 @@ Public Class Form1
         LoadingMessage.Text = "This list takes a while to load - calculating Inactive Mandate total "
         Me.Refresh()
 
-        SetupMandatesInactive(ExtractList, environ, connection, 0)
-        SetupMandatesInactive(ExtractList, environ, connection, 1)
-        SetupMandatesInactive(ExtractList, environ, connection, 2)
+        SetupMandatesInactive(ExtractList, environ, connection, 0, enddate)
+        SetupMandatesInactive(ExtractList, environ, connection, 1, enddate)
+        SetupMandatesInactive(ExtractList, environ, connection, 2, enddate)
 
         SetupMandatesInactiveTotal(ExtractList)
 
@@ -896,7 +896,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub SetupTotalVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer)
+    Private Sub SetupTotalVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
         Dim MySQL, strConn As String
         Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
         Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
@@ -938,6 +938,27 @@ Public Class Form1
                   and l.num_units > 0  
                   and a.accounttype = @at1) vt      )
 
+                and a.accountid in
+
+                  (select distinct a.accountid
+                   from users u, accounts a
+
+                    inner join
+
+              ( select  max (g.datecreated) as maxdatecreated, g.accountid
+                    from get_user_accounts_history g
+                    where  g.datecreated < @dt1
+                    group by g.accountid
+                    order by g.accountid   ) vt
+
+                    on a.accountid = vt.accountid
+
+               where a.userid = u.userid and
+                     u.activated = 5 and a.activated_bank = 5 
+                     and u.isactive = 0  And  u.usertype = 0
+                     and a.accounttype = @at1
+                     and a.accountid  = vt.accountid)
+
                 group by  a.accountid
                 order by  a.accountid "
 
@@ -953,6 +974,7 @@ Public Class Form1
         Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
 
         Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
+        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
 
         Adaptor.Fill(ds1)
         MyConn.Close()
@@ -1014,7 +1036,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub SetupInactiveVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer)
+    Private Sub SetupInactiveVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
         Dim MySQL, strConn As String
         Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
         Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
@@ -1056,6 +1078,27 @@ Public Class Form1
                   and l.num_units > 0  
                   and a.accounttype = @at1) vt      )
 
+               and a.accountid in
+
+                  (select distinct a.accountid
+                   from users u, accounts a
+
+                    inner join
+
+              ( select  max (g.datecreated) as maxdatecreated, g.accountid
+                    from get_user_accounts_history g
+                    where  g.datecreated < @dt1
+                    group by g.accountid
+                    order by g.accountid   ) vt
+
+                    on a.accountid = vt.accountid
+
+               where a.userid = u.userid and
+                     u.activated = 5 and a.activated_bank = 5 
+                     and u.isactive = 0  And  u.usertype = 0
+                     and a.accounttype = @at1
+                     and a.accountid  = vt.accountid)
+
                 group by  a.accountid
                 order by  a.accountid "
 
@@ -1067,6 +1110,7 @@ Public Class Form1
         Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
 
         Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
+        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
 
         Adaptor.Fill(ds1)
         MyConn.Close()
@@ -1128,7 +1172,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub SetupMandatesVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer)
+    Private Sub SetupMandatesVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
         Dim MySQL, strConn As String
         Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
         Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
@@ -1139,7 +1183,29 @@ Public Class Form1
                 from mandates m, accounts a
                    where m.accountid = a.accountid
                   and  m.isactive = 0
-                  and a.accounttype = @at1  
+                  and a.accounttype = @at1 
+
+                and a.accountid in
+
+                  (select distinct a.accountid
+                   from users u, accounts a
+
+                    inner join
+
+              ( select  max (g.datecreated) as maxdatecreated, g.accountid
+                    from get_user_accounts_history g
+                    where  g.datecreated < @dt1
+                    group by g.accountid
+                    order by g.accountid   ) vt
+
+                    on a.accountid = vt.accountid
+
+               where a.userid = u.userid and
+                     u.activated = 5 and a.activated_bank = 5 
+                     and u.isactive = 0  And  u.usertype = 0
+                     and a.accounttype = @at1
+                     and a.accountid  = vt.accountid)
+
                 group by  a.accountid
                 order by  a.accountid  "
 
@@ -1151,6 +1217,7 @@ Public Class Form1
         Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
 
         Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
+        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
 
         Adaptor.Fill(ds1)
         MyConn.Close()
@@ -1213,7 +1280,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub SetupMandatesInactive(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer)
+    Private Sub SetupMandatesInactive(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
         Dim MySQL, strConn As String
         Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
         Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
@@ -1225,6 +1292,28 @@ Public Class Form1
                    where m.accountid = a.accountid
                   and  m.isactive = 1
                   and a.accounttype = @at1  
+
+                and a.accountid in
+
+                  (select distinct a.accountid
+                   from users u, accounts a
+
+                    inner join
+
+              ( select  max (g.datecreated) as maxdatecreated, g.accountid
+                    from get_user_accounts_history g
+                    where  g.datecreated < @dt1
+                    group by g.accountid
+                    order by g.accountid   ) vt
+
+                    on a.accountid = vt.accountid
+
+               where a.userid = u.userid and
+                     u.activated = 5 and a.activated_bank = 5 
+                     and u.isactive = 0  And  u.usertype = 0
+                     and a.accounttype = @at1
+                     and a.accountid  = vt.accountid)
+
                 group by  a.accountid
                 order by  a.accountid  "
 
@@ -1236,6 +1325,7 @@ Public Class Form1
         Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
 
         Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
+        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
 
         Adaptor.Fill(ds1)
         MyConn.Close()
