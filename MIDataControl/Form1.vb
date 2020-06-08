@@ -219,9 +219,9 @@ Public Class Form1
         LoadingMessage.Text = "This list takes a while to load - calculating Client Account Free Balances"
         Me.Refresh()
 
-        SetupFreeBalancesValues(ExtractList, environ, connection, 0)
-        SetupFreeBalancesValues(ExtractList, environ, connection, 1)
-        SetupFreeBalancesValues(ExtractList, environ, connection, 2)
+        SetupFreeBalancesValues(ExtractList, environ, connection, 0, enddate)
+        SetupFreeBalancesValues(ExtractList, environ, connection, 1, enddate)
+        SetupFreeBalancesValues(ExtractList, environ, connection, 2, enddate)
 
         iSumAUM = 0
 
@@ -239,9 +239,9 @@ Public Class Form1
         LoadingMessage.Text = "This list takes a while to load - calculating Current Loan Balances"
         Me.Refresh()
 
-        SetupLoanBalancesValues(ExtractList, environ, connection, 0)
-        SetupLoanBalancesValues(ExtractList, environ, connection, 1)
-        SetupLoanBalancesValues(ExtractList, environ, connection, 2)
+        SetupLoanBalancesValues(ExtractList, environ, connection, 0, enddate)
+        SetupLoanBalancesValues(ExtractList, environ, connection, 1, enddate)
+        SetupLoanBalancesValues(ExtractList, environ, connection, 2, enddate)
 
         SetupLoanBalanceTotals(ExtractList)
 
@@ -1387,7 +1387,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub SetupFreeBalancesValues(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer)
+    Private Sub SetupFreeBalancesValues(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
         Dim MySQL, strConn As String
         Dim dAmount As Double
         Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
@@ -1407,7 +1407,19 @@ Public Class Form1
               union all
                  Select            fb.amount * (-1) as balance
                    From select_active_accounts a  
-                  Left outer  join fin_balances_suspense fb on fb.accountid = a.accountid
+                  Left outer  join
+
+            (select vt.accountid,  max_fin_bals_suspenseid, t.amount
+        from 
+        ( 
+        select accountid, max(fin_bals_suspenseid) as max_fin_bals_suspenseid
+        from fin_bals_suspense s
+
+        where s.datecreated < @dt1
+        group by accountid
+        ) vt
+        inner join fin_bals_suspense t on t.fin_bals_suspenseid = vt.max_fin_bals_suspenseid
+        where t.amount > 0 )   fb on fb.accountid = a.accountid
                  where fb.accountid = a.accountid
                    and a.accounttype = @at1) f"
 
@@ -1420,6 +1432,7 @@ Public Class Form1
         Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
 
         Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
+        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
 
         Adaptor.Fill(ds1)
         MyConn.Close()
@@ -1488,7 +1501,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub SetupLoanBalancesValues(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer)
+    Private Sub SetupLoanBalancesValues(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
         Dim MySQL, strConn As String
         Dim dAmount As Double
         Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
@@ -1506,7 +1519,18 @@ Public Class Form1
               union all
                  Select            fb.num_units * (-1) as balance
                    From select_active_accounts a  
-                  Left outer  join lh_balances_suspense fb on fb.accountid = a.accountid
+                  Left outer  join 
+            (select vt.accountid, lh_id, max_lh_bals_sus_id, t.num_units
+                 from 
+                  ( 
+                     select accountid, max(lh_bals_suspense_id) as max_lh_bals_sus_id
+                     from lh_bals_suspense s
+                      where lh_id > 0
+                       and s.datecreated < @dt1
+                       group by accountid, lh_id
+                    ) vt
+                inner join lh_bals_suspense t on t.lh_bals_suspense_id = vt.max_lh_bals_sus_id
+                 where t.num_units > 0 )   fb on fb.accountid = a.accountid
                  where fb.accountid = a.accountid
                    and a.accounttype = @at1) f"
 
@@ -1519,6 +1543,7 @@ Public Class Form1
         Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
 
         Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
+        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
 
         Adaptor.Fill(ds1)
         MyConn.Close()
