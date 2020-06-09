@@ -36,6 +36,78 @@ Public Class Form1
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 
         LoadingMessage.Text = "This list takes a while to load - please be patient"
+
+        tbNTA1.Text = ""
+        tbNTA2.Text = ""
+        tbNTA3.Text = ""
+        tbNS1.Text = ""
+        tbNS2.Text = ""
+        tbNS3.Text = ""
+        tbNISA1.Text = ""
+        tbNISA2.Text = ""
+        tbNISA3.Text = ""
+        tbTNA1.Text = ""
+        tbTNA2.Text = ""
+        tbTNA3.Text = ""
+        tbNII1.Text = ""
+        tbNII2.Text = ""
+        tbNII3.Text = ""
+        tbFDT1.Text = ""
+        tbFDT2.Text = ""
+        tbFDT3.Text = ""
+        tbFDS1.Text = ""
+        tbFDS2.Text = ""
+        tbFDS3.Text = ""
+        tbFDI1.Text = ""
+        tbFDI2.Text = ""
+        tbFDI3.Text = ""
+        tbTFW1.Text = ""
+        tbTFW2.Text = ""
+        tbTFW3.Text = ""
+        tbTFD1.Text = ""
+        tbTFD2.Text = ""
+        tbTFD3.Text = ""
+        tbDW.Text = ""
+        tbNMT1.Text = ""
+        tbNMT2.Text = ""
+        tbNMT3.Text = ""
+        tbNMS1.Text = ""
+        tbNMS2.Text = ""
+        tbNMS3.Text = ""
+        tbNMI1.Text = ""
+        tbNMI2.Text = ""
+        tbNMI3.Text = ""
+        tbTNM1.Text = ""
+        tbTNM2.Text = ""
+        tbTNM3.Text = ""
+        tbTAT.Text = ""
+        tbTAS.Text = ""
+        tbTAI.Text = ""
+        tbTAA.Text = ""
+        tbTIT.Text = ""
+        tbTIS.Text = ""
+        tbTII.Text = ""
+        tbTIA.Text = ""
+        tbMAT.Text = ""
+        tbMAS.Text = ""
+        tbMAI.Text = ""
+        tbTAM.Text = ""
+        tbITM.Text = ""
+        tbISM.Text = ""
+        tbIIM.Text = ""
+        tbTIM.Text = ""
+        tbTAB.Text = ""
+        tbSAB.Text = ""
+        tbIAB.Text = ""
+        tbCAB.Text = ""
+        tbTLB.Text = ""
+        tbSLB.Text = ""
+        tbILB.Text = ""
+        tbAUM.Text = ""
+
+
+
+
         Me.Refresh()
 
         Dim MySQL, strConn, sHTML, bHTML, sUsers As String
@@ -766,7 +838,7 @@ Public Class Form1
 
 
 
-        newExtract.Description = "Funds withdrawn within one weke of deposit"
+        newExtract.Description = "Funds withdrawn within one week of deposit"
 
 
         newExtract.Amount1 = ""
