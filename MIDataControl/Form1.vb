@@ -1473,11 +1473,23 @@ Public Class Form1
                 from (
                  Select            fb.amount  as balance
                    From select_active_accounts a  
-                  Left outer  join fin_balances fb on fb.accountid = a.accountid
+                  Left outer  join
+
+                 (select vt.accountid,  max_fin_balid, t.amount
+        from 
+        ( 
+        select accountid, max(fin_balid) as max_fin_balid
+        from fin_bals s
+
+        where s.datecreated < @dt1
+        group by accountid
+        ) vt
+        inner join fin_bals t on t.fin_balid = vt.max_fin_balid
+        where t.amount > 0 ) fb on fb.accountid = a.accountid
                  where fb.accountid = a.accountid
                    and a.accounttype = @at1
               union all
-                 Select            fb.amount * (-1) as balance
+                 Select            fb.amount as balance
                    From select_active_accounts a  
                   Left outer  join
 
@@ -1585,11 +1597,24 @@ Public Class Form1
                 from (
                  Select            fb.num_units  as balance
                    From select_active_accounts a  
-                  Left outer  join lh_balances fb on fb.accountid = a.accountid
+                  Left outer  join
+                  ( select vt.accountid, lh_id, max_lh_bals_id, t.num_units
+                 from 
+                  ( 
+                     select accountid, max(lh_bals_id) as max_lh_bals_id
+                     from lh_bals s
+                      where lh_id > 0
+                       and s.datecreated < @dt1
+                       group by accountid, lh_id
+                    ) vt
+                inner join lh_bals t on t.lh_bals_id = vt.max_lh_bals_id
+                 where t.num_units > 0 ) 
+
+                fb on fb.accountid = a.accountid
                  where fb.accountid = a.accountid
                    and a.accounttype = @at1
               union all
-                 Select            fb.num_units * (-1) as balance
+                 Select            fb.num_units  as balance
                    From select_active_accounts a  
                   Left outer  join 
             (select vt.accountid, lh_id, max_lh_bals_sus_id, t.num_units
