@@ -79,7 +79,6 @@ Partial Class Form1
         Me.Label50 = New System.Windows.Forms.Label()
         Me.Label51 = New System.Windows.Forms.Label()
         Me.Label52 = New System.Windows.Forms.Label()
-        Me.Label53 = New System.Windows.Forms.Label()
         Me.tbNTA1 = New System.Windows.Forms.TextBox()
         Me.tbNTA3 = New System.Windows.Forms.TextBox()
         Me.tbNTA2 = New System.Windows.Forms.TextBox()
@@ -126,8 +125,8 @@ Partial Class Form1
         Me.tbNMT3 = New System.Windows.Forms.TextBox()
         Me.tbNMT1 = New System.Windows.Forms.TextBox()
         Me.tbTAT = New System.Windows.Forms.TextBox()
-        Me.tbTAS = New System.Windows.Forms.TextBox()
-        Me.tbTAI = New System.Windows.Forms.TextBox()
+        Me.tbTASl6 = New System.Windows.Forms.TextBox()
+        Me.tbTAIl6 = New System.Windows.Forms.TextBox()
         Me.tbTAA = New System.Windows.Forms.TextBox()
         Me.tbTIA = New System.Windows.Forms.TextBox()
         Me.tbTII = New System.Windows.Forms.TextBox()
@@ -153,6 +152,31 @@ Partial Class Form1
         Me.LoadingMessage = New System.Windows.Forms.Label()
         Me.tbDW = New System.Windows.Forms.TextBox()
         Me.Label57 = New System.Windows.Forms.Label()
+        Me.tbTATg6 = New System.Windows.Forms.TextBox()
+        Me.Label58 = New System.Windows.Forms.Label()
+        Me.tbTATl6 = New System.Windows.Forms.TextBox()
+        Me.Label59 = New System.Windows.Forms.Label()
+        Me.tbTAS = New System.Windows.Forms.TextBox()
+        Me.Label60 = New System.Windows.Forms.Label()
+        Me.tbTASg6 = New System.Windows.Forms.TextBox()
+        Me.Label61 = New System.Windows.Forms.Label()
+        Me.tbTAI = New System.Windows.Forms.TextBox()
+        Me.Label62 = New System.Windows.Forms.Label()
+        Me.tbTAIg6 = New System.Windows.Forms.TextBox()
+        Me.Label63 = New System.Windows.Forms.Label()
+        Me.tbMATg6 = New System.Windows.Forms.TextBox()
+        Me.Label64 = New System.Windows.Forms.Label()
+        Me.tbMATl6 = New System.Windows.Forms.TextBox()
+        Me.Label65 = New System.Windows.Forms.Label()
+        Me.tbMASl6 = New System.Windows.Forms.TextBox()
+        Me.Label66 = New System.Windows.Forms.Label()
+        Me.tbMASg6 = New System.Windows.Forms.TextBox()
+        Me.Label67 = New System.Windows.Forms.Label()
+        Me.tbMAIl6 = New System.Windows.Forms.TextBox()
+        Me.Label68 = New System.Windows.Forms.Label()
+        Me.tbMAIg6 = New System.Windows.Forms.TextBox()
+        Me.Label69 = New System.Windows.Forms.Label()
+        Me.Label70 = New System.Windows.Forms.Label()
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -393,7 +417,7 @@ Partial Class Form1
         'Label23
         '
         Me.Label23.AutoSize = True
-        Me.Label23.Location = New System.Drawing.Point(669, 174)
+        Me.Label23.Location = New System.Drawing.Point(643, 319)
         Me.Label23.Name = "Label23"
         Me.Label23.Size = New System.Drawing.Size(145, 13)
         Me.Label23.TabIndex = 52
@@ -402,25 +426,25 @@ Partial Class Form1
         'Label24
         '
         Me.Label24.AutoSize = True
-        Me.Label24.Location = New System.Drawing.Point(699, 146)
+        Me.Label24.Location = New System.Drawing.Point(673, 247)
         Me.Label24.Name = "Label24"
-        Me.Label24.Size = New System.Drawing.Size(132, 13)
+        Me.Label24.Size = New System.Drawing.Size(177, 13)
         Me.Label24.TabIndex = 51
-        Me.Label24.Text = "Total Active ISA Accounts"
+        Me.Label24.Text = "Active ISA Accounts Mvmt < 6 mths"
         '
         'Label25
         '
         Me.Label25.AutoSize = True
-        Me.Label25.Location = New System.Drawing.Point(699, 123)
+        Me.Label25.Location = New System.Drawing.Point(673, 173)
         Me.Label25.Name = "Label25"
-        Me.Label25.Size = New System.Drawing.Size(139, 13)
+        Me.Label25.Size = New System.Drawing.Size(184, 13)
         Me.Label25.TabIndex = 50
-        Me.Label25.Text = "Total Active SIPP Accounts"
+        Me.Label25.Text = "Active SIPP Accounts Mvmt < 6 mths"
         '
         'Label26
         '
         Me.Label26.AutoSize = True
-        Me.Label26.Location = New System.Drawing.Point(699, 101)
+        Me.Label26.Location = New System.Drawing.Point(685, 147)
         Me.Label26.Name = "Label26"
         Me.Label26.Size = New System.Drawing.Size(151, 13)
         Me.Label26.TabIndex = 49
@@ -429,7 +453,7 @@ Partial Class Form1
         'Label27
         '
         Me.Label27.AutoSize = True
-        Me.Label27.Location = New System.Drawing.Point(672, 79)
+        Me.Label27.Location = New System.Drawing.Point(646, 79)
         Me.Label27.Name = "Label27"
         Me.Label27.Size = New System.Drawing.Size(127, 13)
         Me.Label27.TabIndex = 48
@@ -438,7 +462,7 @@ Partial Class Form1
         'Label28
         '
         Me.Label28.AutoSize = True
-        Me.Label28.Location = New System.Drawing.Point(668, 296)
+        Me.Label28.Location = New System.Drawing.Point(642, 441)
         Me.Label28.Name = "Label28"
         Me.Label28.Size = New System.Drawing.Size(156, 13)
         Me.Label28.TabIndex = 57
@@ -447,7 +471,7 @@ Partial Class Form1
         'Label29
         '
         Me.Label29.AutoSize = True
-        Me.Label29.Location = New System.Drawing.Point(695, 272)
+        Me.Label29.Location = New System.Drawing.Point(669, 417)
         Me.Label29.Name = "Label29"
         Me.Label29.Size = New System.Drawing.Size(140, 13)
         Me.Label29.TabIndex = 56
@@ -456,7 +480,7 @@ Partial Class Form1
         'Label30
         '
         Me.Label30.AutoSize = True
-        Me.Label30.Location = New System.Drawing.Point(695, 249)
+        Me.Label30.Location = New System.Drawing.Point(669, 394)
         Me.Label30.Name = "Label30"
         Me.Label30.Size = New System.Drawing.Size(147, 13)
         Me.Label30.TabIndex = 55
@@ -465,7 +489,7 @@ Partial Class Form1
         'Label31
         '
         Me.Label31.AutoSize = True
-        Me.Label31.Location = New System.Drawing.Point(695, 227)
+        Me.Label31.Location = New System.Drawing.Point(669, 372)
         Me.Label31.Name = "Label31"
         Me.Label31.Size = New System.Drawing.Size(159, 13)
         Me.Label31.TabIndex = 54
@@ -474,7 +498,7 @@ Partial Class Form1
         'Label32
         '
         Me.Label32.AutoSize = True
-        Me.Label32.Location = New System.Drawing.Point(671, 208)
+        Me.Label32.Location = New System.Drawing.Point(645, 353)
         Me.Label32.Name = "Label32"
         Me.Label32.Size = New System.Drawing.Size(135, 13)
         Me.Label32.TabIndex = 53
@@ -483,7 +507,7 @@ Partial Class Form1
         'Label33
         '
         Me.Label33.AutoSize = True
-        Me.Label33.Location = New System.Drawing.Point(663, 546)
+        Me.Label33.Location = New System.Drawing.Point(637, 843)
         Me.Label33.Name = "Label33"
         Me.Label33.Size = New System.Drawing.Size(157, 13)
         Me.Label33.TabIndex = 67
@@ -492,7 +516,7 @@ Partial Class Form1
         'Label34
         '
         Me.Label34.AutoSize = True
-        Me.Label34.Location = New System.Drawing.Point(690, 523)
+        Me.Label34.Location = New System.Drawing.Point(664, 820)
         Me.Label34.Name = "Label34"
         Me.Label34.Size = New System.Drawing.Size(142, 13)
         Me.Label34.TabIndex = 66
@@ -501,7 +525,7 @@ Partial Class Form1
         'Label35
         '
         Me.Label35.AutoSize = True
-        Me.Label35.Location = New System.Drawing.Point(690, 500)
+        Me.Label35.Location = New System.Drawing.Point(664, 797)
         Me.Label35.Name = "Label35"
         Me.Label35.Size = New System.Drawing.Size(149, 13)
         Me.Label35.TabIndex = 65
@@ -510,7 +534,7 @@ Partial Class Form1
         'Label36
         '
         Me.Label36.AutoSize = True
-        Me.Label36.Location = New System.Drawing.Point(690, 478)
+        Me.Label36.Location = New System.Drawing.Point(664, 775)
         Me.Label36.Name = "Label36"
         Me.Label36.Size = New System.Drawing.Size(161, 13)
         Me.Label36.TabIndex = 64
@@ -519,7 +543,7 @@ Partial Class Form1
         'Label37
         '
         Me.Label37.AutoSize = True
-        Me.Label37.Location = New System.Drawing.Point(663, 456)
+        Me.Label37.Location = New System.Drawing.Point(637, 753)
         Me.Label37.Name = "Label37"
         Me.Label37.Size = New System.Drawing.Size(137, 13)
         Me.Label37.TabIndex = 63
@@ -528,7 +552,7 @@ Partial Class Form1
         'Label38
         '
         Me.Label38.AutoSize = True
-        Me.Label38.Location = New System.Drawing.Point(663, 421)
+        Me.Label38.Location = New System.Drawing.Point(637, 718)
         Me.Label38.Name = "Label38"
         Me.Label38.Size = New System.Drawing.Size(146, 13)
         Me.Label38.TabIndex = 62
@@ -537,7 +561,7 @@ Partial Class Form1
         'Label39
         '
         Me.Label39.AutoSize = True
-        Me.Label39.Location = New System.Drawing.Point(694, 397)
+        Me.Label39.Location = New System.Drawing.Point(680, 687)
         Me.Label39.Name = "Label39"
         Me.Label39.Size = New System.Drawing.Size(134, 13)
         Me.Label39.TabIndex = 61
@@ -546,7 +570,7 @@ Partial Class Form1
         'Label40
         '
         Me.Label40.AutoSize = True
-        Me.Label40.Location = New System.Drawing.Point(694, 374)
+        Me.Label40.Location = New System.Drawing.Point(680, 615)
         Me.Label40.Name = "Label40"
         Me.Label40.Size = New System.Drawing.Size(141, 13)
         Me.Label40.TabIndex = 60
@@ -555,7 +579,7 @@ Partial Class Form1
         'Label41
         '
         Me.Label41.AutoSize = True
-        Me.Label41.Location = New System.Drawing.Point(694, 352)
+        Me.Label41.Location = New System.Drawing.Point(680, 540)
         Me.Label41.Name = "Label41"
         Me.Label41.Size = New System.Drawing.Size(153, 13)
         Me.Label41.TabIndex = 59
@@ -564,7 +588,7 @@ Partial Class Form1
         'Label42
         '
         Me.Label42.AutoSize = True
-        Me.Label42.Location = New System.Drawing.Point(667, 330)
+        Me.Label42.Location = New System.Drawing.Point(641, 475)
         Me.Label42.Name = "Label42"
         Me.Label42.Size = New System.Drawing.Size(129, 13)
         Me.Label42.TabIndex = 58
@@ -573,7 +597,7 @@ Partial Class Form1
         'Label43
         '
         Me.Label43.AutoSize = True
-        Me.Label43.Location = New System.Drawing.Point(663, 799)
+        Me.Label43.Location = New System.Drawing.Point(195, 835)
         Me.Label43.Name = "Label43"
         Me.Label43.Size = New System.Drawing.Size(180, 13)
         Me.Label43.TabIndex = 77
@@ -582,7 +606,7 @@ Partial Class Form1
         'Label44
         '
         Me.Label44.AutoSize = True
-        Me.Label44.Location = New System.Drawing.Point(690, 775)
+        Me.Label44.Location = New System.Drawing.Point(222, 811)
         Me.Label44.Name = "Label44"
         Me.Label44.Size = New System.Drawing.Size(136, 13)
         Me.Label44.TabIndex = 76
@@ -591,7 +615,7 @@ Partial Class Form1
         'Label45
         '
         Me.Label45.AutoSize = True
-        Me.Label45.Location = New System.Drawing.Point(690, 752)
+        Me.Label45.Location = New System.Drawing.Point(222, 788)
         Me.Label45.Name = "Label45"
         Me.Label45.Size = New System.Drawing.Size(143, 13)
         Me.Label45.TabIndex = 75
@@ -600,7 +624,7 @@ Partial Class Form1
         'Label46
         '
         Me.Label46.AutoSize = True
-        Me.Label46.Location = New System.Drawing.Point(690, 730)
+        Me.Label46.Location = New System.Drawing.Point(222, 766)
         Me.Label46.Name = "Label46"
         Me.Label46.Size = New System.Drawing.Size(155, 13)
         Me.Label46.TabIndex = 74
@@ -609,7 +633,7 @@ Partial Class Form1
         'Label47
         '
         Me.Label47.AutoSize = True
-        Me.Label47.Location = New System.Drawing.Point(663, 708)
+        Me.Label47.Location = New System.Drawing.Point(195, 744)
         Me.Label47.Name = "Label47"
         Me.Label47.Size = New System.Drawing.Size(198, 13)
         Me.Label47.TabIndex = 73
@@ -618,7 +642,7 @@ Partial Class Form1
         'Label48
         '
         Me.Label48.AutoSize = True
-        Me.Label48.Location = New System.Drawing.Point(663, 673)
+        Me.Label48.Location = New System.Drawing.Point(195, 709)
         Me.Label48.Name = "Label48"
         Me.Label48.Size = New System.Drawing.Size(197, 13)
         Me.Label48.TabIndex = 72
@@ -627,7 +651,7 @@ Partial Class Form1
         'Label49
         '
         Me.Label49.AutoSize = True
-        Me.Label49.Location = New System.Drawing.Point(694, 649)
+        Me.Label49.Location = New System.Drawing.Point(226, 685)
         Me.Label49.Name = "Label49"
         Me.Label49.Size = New System.Drawing.Size(141, 13)
         Me.Label49.TabIndex = 71
@@ -636,7 +660,7 @@ Partial Class Form1
         'Label50
         '
         Me.Label50.AutoSize = True
-        Me.Label50.Location = New System.Drawing.Point(694, 626)
+        Me.Label50.Location = New System.Drawing.Point(226, 662)
         Me.Label50.Name = "Label50"
         Me.Label50.Size = New System.Drawing.Size(148, 13)
         Me.Label50.TabIndex = 70
@@ -645,7 +669,7 @@ Partial Class Form1
         'Label51
         '
         Me.Label51.AutoSize = True
-        Me.Label51.Location = New System.Drawing.Point(694, 604)
+        Me.Label51.Location = New System.Drawing.Point(226, 640)
         Me.Label51.Name = "Label51"
         Me.Label51.Size = New System.Drawing.Size(160, 13)
         Me.Label51.TabIndex = 69
@@ -654,20 +678,11 @@ Partial Class Form1
         'Label52
         '
         Me.Label52.AutoSize = True
-        Me.Label52.Location = New System.Drawing.Point(661, 581)
+        Me.Label52.Location = New System.Drawing.Point(193, 617)
         Me.Label52.Name = "Label52"
         Me.Label52.Size = New System.Drawing.Size(147, 13)
         Me.Label52.TabIndex = 68
         Me.Label52.Text = "Client Account Free Balances"
-        '
-        'Label53
-        '
-        Me.Label53.AutoSize = True
-        Me.Label53.Location = New System.Drawing.Point(663, 851)
-        Me.Label53.Name = "Label53"
-        Me.Label53.Size = New System.Drawing.Size(155, 13)
-        Me.Label53.TabIndex = 78
-        Me.Label53.Text = "TOTAL AUM (LOANS + CASH)"
         '
         'tbNTA1
         '
@@ -1034,31 +1049,31 @@ Partial Class Form1
         '
         'tbTAT
         '
-        Me.tbTAT.Location = New System.Drawing.Point(908, 98)
+        Me.tbTAT.Location = New System.Drawing.Point(908, 144)
         Me.tbTAT.Name = "tbTAT"
         Me.tbTAT.Size = New System.Drawing.Size(93, 20)
         Me.tbTAT.TabIndex = 124
         Me.tbTAT.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
-        'tbTAS
+        'tbTASl6
         '
-        Me.tbTAS.Location = New System.Drawing.Point(908, 120)
-        Me.tbTAS.Name = "tbTAS"
-        Me.tbTAS.Size = New System.Drawing.Size(93, 20)
-        Me.tbTAS.TabIndex = 125
-        Me.tbTAS.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        Me.tbTASl6.Location = New System.Drawing.Point(908, 170)
+        Me.tbTASl6.Name = "tbTASl6"
+        Me.tbTASl6.Size = New System.Drawing.Size(93, 20)
+        Me.tbTASl6.TabIndex = 125
+        Me.tbTASl6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
-        'tbTAI
+        'tbTAIl6
         '
-        Me.tbTAI.Location = New System.Drawing.Point(908, 142)
-        Me.tbTAI.Name = "tbTAI"
-        Me.tbTAI.Size = New System.Drawing.Size(93, 20)
-        Me.tbTAI.TabIndex = 126
-        Me.tbTAI.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        Me.tbTAIl6.Location = New System.Drawing.Point(908, 243)
+        Me.tbTAIl6.Name = "tbTAIl6"
+        Me.tbTAIl6.Size = New System.Drawing.Size(93, 20)
+        Me.tbTAIl6.TabIndex = 126
+        Me.tbTAIl6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
         'tbTAA
         '
-        Me.tbTAA.Location = New System.Drawing.Point(908, 171)
+        Me.tbTAA.Location = New System.Drawing.Point(908, 316)
         Me.tbTAA.Name = "tbTAA"
         Me.tbTAA.Size = New System.Drawing.Size(93, 20)
         Me.tbTAA.TabIndex = 127
@@ -1066,7 +1081,7 @@ Partial Class Form1
         '
         'tbTIA
         '
-        Me.tbTIA.Location = New System.Drawing.Point(908, 293)
+        Me.tbTIA.Location = New System.Drawing.Point(908, 438)
         Me.tbTIA.Name = "tbTIA"
         Me.tbTIA.Size = New System.Drawing.Size(93, 20)
         Me.tbTIA.TabIndex = 131
@@ -1074,7 +1089,7 @@ Partial Class Form1
         '
         'tbTII
         '
-        Me.tbTII.Location = New System.Drawing.Point(908, 264)
+        Me.tbTII.Location = New System.Drawing.Point(908, 409)
         Me.tbTII.Name = "tbTII"
         Me.tbTII.Size = New System.Drawing.Size(93, 20)
         Me.tbTII.TabIndex = 130
@@ -1082,7 +1097,7 @@ Partial Class Form1
         '
         'tbTIS
         '
-        Me.tbTIS.Location = New System.Drawing.Point(908, 242)
+        Me.tbTIS.Location = New System.Drawing.Point(908, 387)
         Me.tbTIS.Name = "tbTIS"
         Me.tbTIS.Size = New System.Drawing.Size(93, 20)
         Me.tbTIS.TabIndex = 129
@@ -1090,7 +1105,7 @@ Partial Class Form1
         '
         'tbTIT
         '
-        Me.tbTIT.Location = New System.Drawing.Point(908, 220)
+        Me.tbTIT.Location = New System.Drawing.Point(908, 365)
         Me.tbTIT.Name = "tbTIT"
         Me.tbTIT.Size = New System.Drawing.Size(93, 20)
         Me.tbTIT.TabIndex = 128
@@ -1098,7 +1113,7 @@ Partial Class Form1
         '
         'tbTAM
         '
-        Me.tbTAM.Location = New System.Drawing.Point(908, 418)
+        Me.tbTAM.Location = New System.Drawing.Point(908, 715)
         Me.tbTAM.Name = "tbTAM"
         Me.tbTAM.Size = New System.Drawing.Size(93, 20)
         Me.tbTAM.TabIndex = 135
@@ -1106,7 +1121,7 @@ Partial Class Form1
         '
         'tbMAI
         '
-        Me.tbMAI.Location = New System.Drawing.Point(908, 389)
+        Me.tbMAI.Location = New System.Drawing.Point(908, 683)
         Me.tbMAI.Name = "tbMAI"
         Me.tbMAI.Size = New System.Drawing.Size(93, 20)
         Me.tbMAI.TabIndex = 134
@@ -1114,7 +1129,7 @@ Partial Class Form1
         '
         'tbMAS
         '
-        Me.tbMAS.Location = New System.Drawing.Point(908, 367)
+        Me.tbMAS.Location = New System.Drawing.Point(908, 610)
         Me.tbMAS.Name = "tbMAS"
         Me.tbMAS.Size = New System.Drawing.Size(93, 20)
         Me.tbMAS.TabIndex = 133
@@ -1122,7 +1137,7 @@ Partial Class Form1
         '
         'tbMAT
         '
-        Me.tbMAT.Location = New System.Drawing.Point(908, 345)
+        Me.tbMAT.Location = New System.Drawing.Point(908, 537)
         Me.tbMAT.Name = "tbMAT"
         Me.tbMAT.Size = New System.Drawing.Size(93, 20)
         Me.tbMAT.TabIndex = 132
@@ -1130,7 +1145,7 @@ Partial Class Form1
         '
         'tbTIM
         '
-        Me.tbTIM.Location = New System.Drawing.Point(908, 545)
+        Me.tbTIM.Location = New System.Drawing.Point(908, 842)
         Me.tbTIM.Name = "tbTIM"
         Me.tbTIM.Size = New System.Drawing.Size(93, 20)
         Me.tbTIM.TabIndex = 139
@@ -1138,7 +1153,7 @@ Partial Class Form1
         '
         'tbIIM
         '
-        Me.tbIIM.Location = New System.Drawing.Point(908, 516)
+        Me.tbIIM.Location = New System.Drawing.Point(908, 813)
         Me.tbIIM.Name = "tbIIM"
         Me.tbIIM.Size = New System.Drawing.Size(93, 20)
         Me.tbIIM.TabIndex = 138
@@ -1146,7 +1161,7 @@ Partial Class Form1
         '
         'tbISM
         '
-        Me.tbISM.Location = New System.Drawing.Point(908, 494)
+        Me.tbISM.Location = New System.Drawing.Point(908, 791)
         Me.tbISM.Name = "tbISM"
         Me.tbISM.Size = New System.Drawing.Size(93, 20)
         Me.tbISM.TabIndex = 137
@@ -1154,7 +1169,7 @@ Partial Class Form1
         '
         'tbITM
         '
-        Me.tbITM.Location = New System.Drawing.Point(908, 472)
+        Me.tbITM.Location = New System.Drawing.Point(908, 769)
         Me.tbITM.Name = "tbITM"
         Me.tbITM.Size = New System.Drawing.Size(93, 20)
         Me.tbITM.TabIndex = 136
@@ -1162,7 +1177,7 @@ Partial Class Form1
         '
         'tbCAB
         '
-        Me.tbCAB.Location = New System.Drawing.Point(908, 670)
+        Me.tbCAB.Location = New System.Drawing.Point(466, 706)
         Me.tbCAB.Name = "tbCAB"
         Me.tbCAB.Size = New System.Drawing.Size(93, 20)
         Me.tbCAB.TabIndex = 143
@@ -1170,7 +1185,7 @@ Partial Class Form1
         '
         'tbIAB
         '
-        Me.tbIAB.Location = New System.Drawing.Point(908, 641)
+        Me.tbIAB.Location = New System.Drawing.Point(466, 677)
         Me.tbIAB.Name = "tbIAB"
         Me.tbIAB.Size = New System.Drawing.Size(93, 20)
         Me.tbIAB.TabIndex = 142
@@ -1178,7 +1193,7 @@ Partial Class Form1
         '
         'tbSAB
         '
-        Me.tbSAB.Location = New System.Drawing.Point(908, 619)
+        Me.tbSAB.Location = New System.Drawing.Point(466, 655)
         Me.tbSAB.Name = "tbSAB"
         Me.tbSAB.Size = New System.Drawing.Size(93, 20)
         Me.tbSAB.TabIndex = 141
@@ -1186,7 +1201,7 @@ Partial Class Form1
         '
         'tbTAB
         '
-        Me.tbTAB.Location = New System.Drawing.Point(908, 597)
+        Me.tbTAB.Location = New System.Drawing.Point(466, 633)
         Me.tbTAB.Name = "tbTAB"
         Me.tbTAB.Size = New System.Drawing.Size(93, 20)
         Me.tbTAB.TabIndex = 140
@@ -1194,7 +1209,7 @@ Partial Class Form1
         '
         'tbLLB
         '
-        Me.tbLLB.Location = New System.Drawing.Point(908, 796)
+        Me.tbLLB.Location = New System.Drawing.Point(466, 830)
         Me.tbLLB.Name = "tbLLB"
         Me.tbLLB.Size = New System.Drawing.Size(93, 20)
         Me.tbLLB.TabIndex = 147
@@ -1202,7 +1217,7 @@ Partial Class Form1
         '
         'tbILB
         '
-        Me.tbILB.Location = New System.Drawing.Point(908, 767)
+        Me.tbILB.Location = New System.Drawing.Point(466, 803)
         Me.tbILB.Name = "tbILB"
         Me.tbILB.Size = New System.Drawing.Size(93, 20)
         Me.tbILB.TabIndex = 146
@@ -1210,7 +1225,7 @@ Partial Class Form1
         '
         'tbSLB
         '
-        Me.tbSLB.Location = New System.Drawing.Point(908, 745)
+        Me.tbSLB.Location = New System.Drawing.Point(466, 781)
         Me.tbSLB.Name = "tbSLB"
         Me.tbSLB.Size = New System.Drawing.Size(93, 20)
         Me.tbSLB.TabIndex = 145
@@ -1218,7 +1233,7 @@ Partial Class Form1
         '
         'tbTLB
         '
-        Me.tbTLB.Location = New System.Drawing.Point(908, 723)
+        Me.tbTLB.Location = New System.Drawing.Point(466, 759)
         Me.tbTLB.Name = "tbTLB"
         Me.tbTLB.Size = New System.Drawing.Size(93, 20)
         Me.tbTLB.TabIndex = 144
@@ -1226,7 +1241,7 @@ Partial Class Form1
         '
         'tbAUM
         '
-        Me.tbAUM.Location = New System.Drawing.Point(908, 848)
+        Me.tbAUM.Location = New System.Drawing.Point(466, 855)
         Me.tbAUM.Name = "tbAUM"
         Me.tbAUM.Size = New System.Drawing.Size(93, 20)
         Me.tbAUM.TabIndex = 148
@@ -1259,12 +1274,250 @@ Partial Class Form1
         Me.Label57.Text = "* Includes the following total of identical amounts Deposited and " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Withdrawn fro" &
     "m the same account within 7 days during this period" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
         '
+        'tbTATg6
+        '
+        Me.tbTATg6.Location = New System.Drawing.Point(908, 121)
+        Me.tbTATg6.Name = "tbTATg6"
+        Me.tbTATg6.Size = New System.Drawing.Size(93, 20)
+        Me.tbTATg6.TabIndex = 153
+        Me.tbTATg6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label58
+        '
+        Me.Label58.AutoSize = True
+        Me.Label58.Location = New System.Drawing.Point(673, 124)
+        Me.Label58.Name = "Label58"
+        Me.Label58.Size = New System.Drawing.Size(199, 13)
+        Me.Label58.TabIndex = 152
+        Me.Label58.Text = "Active Trading Accounts Mvmt > 6  mths" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
+        '
+        'tbTATl6
+        '
+        Me.tbTATl6.Location = New System.Drawing.Point(908, 98)
+        Me.tbTATl6.Name = "tbTATl6"
+        Me.tbTATl6.Size = New System.Drawing.Size(93, 20)
+        Me.tbTATl6.TabIndex = 155
+        Me.tbTATl6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label59
+        '
+        Me.Label59.AutoSize = True
+        Me.Label59.Location = New System.Drawing.Point(673, 101)
+        Me.Label59.Name = "Label59"
+        Me.Label59.Size = New System.Drawing.Size(196, 13)
+        Me.Label59.TabIndex = 154
+        Me.Label59.Text = "Active Trading Accounts Mvmt < 6 mths" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
+        '
+        'tbTAS
+        '
+        Me.tbTAS.Location = New System.Drawing.Point(908, 215)
+        Me.tbTAS.Name = "tbTAS"
+        Me.tbTAS.Size = New System.Drawing.Size(93, 20)
+        Me.tbTAS.TabIndex = 157
+        Me.tbTAS.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label60
+        '
+        Me.Label60.AutoSize = True
+        Me.Label60.Location = New System.Drawing.Point(685, 218)
+        Me.Label60.Name = "Label60"
+        Me.Label60.Size = New System.Drawing.Size(139, 13)
+        Me.Label60.TabIndex = 156
+        Me.Label60.Text = "Total Active SIPP Accounts"
+        '
+        'tbTASg6
+        '
+        Me.tbTASg6.Location = New System.Drawing.Point(908, 193)
+        Me.tbTASg6.Name = "tbTASg6"
+        Me.tbTASg6.Size = New System.Drawing.Size(93, 20)
+        Me.tbTASg6.TabIndex = 159
+        Me.tbTASg6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label61
+        '
+        Me.Label61.AutoSize = True
+        Me.Label61.Location = New System.Drawing.Point(673, 196)
+        Me.Label61.Name = "Label61"
+        Me.Label61.Size = New System.Drawing.Size(184, 13)
+        Me.Label61.TabIndex = 158
+        Me.Label61.Text = "Active SIPP Accounts Mvmt > 6 mths"
+        '
+        'tbTAI
+        '
+        Me.tbTAI.Location = New System.Drawing.Point(908, 290)
+        Me.tbTAI.Name = "tbTAI"
+        Me.tbTAI.Size = New System.Drawing.Size(93, 20)
+        Me.tbTAI.TabIndex = 161
+        Me.tbTAI.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label62
+        '
+        Me.Label62.AutoSize = True
+        Me.Label62.Location = New System.Drawing.Point(685, 294)
+        Me.Label62.Name = "Label62"
+        Me.Label62.Size = New System.Drawing.Size(132, 13)
+        Me.Label62.TabIndex = 160
+        Me.Label62.Text = "Total Active ISA Accounts"
+        '
+        'tbTAIg6
+        '
+        Me.tbTAIg6.Location = New System.Drawing.Point(908, 266)
+        Me.tbTAIg6.Name = "tbTAIg6"
+        Me.tbTAIg6.Size = New System.Drawing.Size(93, 20)
+        Me.tbTAIg6.TabIndex = 163
+        Me.tbTAIg6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label63
+        '
+        Me.Label63.AutoSize = True
+        Me.Label63.Location = New System.Drawing.Point(673, 270)
+        Me.Label63.Name = "Label63"
+        Me.Label63.Size = New System.Drawing.Size(177, 13)
+        Me.Label63.TabIndex = 162
+        Me.Label63.Text = "Active ISA Accounts Mvmt > 6 mths"
+        '
+        'tbMATg6
+        '
+        Me.tbMATg6.Location = New System.Drawing.Point(908, 513)
+        Me.tbMATg6.Name = "tbMATg6"
+        Me.tbMATg6.Size = New System.Drawing.Size(93, 20)
+        Me.tbMATg6.TabIndex = 165
+        Me.tbMATg6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label64
+        '
+        Me.Label64.AutoSize = True
+        Me.Label64.Location = New System.Drawing.Point(668, 517)
+        Me.Label64.Name = "Label64"
+        Me.Label64.Size = New System.Drawing.Size(198, 13)
+        Me.Label64.TabIndex = 164
+        Me.Label64.Text = "Active Trading Mandates Mvmt > 6 mths"
+        '
+        'tbMATl6
+        '
+        Me.tbMATl6.Location = New System.Drawing.Point(908, 489)
+        Me.tbMATl6.Name = "tbMATl6"
+        Me.tbMATl6.Size = New System.Drawing.Size(93, 20)
+        Me.tbMATl6.TabIndex = 167
+        Me.tbMATl6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label65
+        '
+        Me.Label65.AutoSize = True
+        Me.Label65.Location = New System.Drawing.Point(668, 496)
+        Me.Label65.Name = "Label65"
+        Me.Label65.Size = New System.Drawing.Size(198, 13)
+        Me.Label65.TabIndex = 166
+        Me.Label65.Text = "Active Trading Mandates Mvmt < 6 mths"
+        '
+        'tbMASl6
+        '
+        Me.tbMASl6.Location = New System.Drawing.Point(908, 563)
+        Me.tbMASl6.Name = "tbMASl6"
+        Me.tbMASl6.Size = New System.Drawing.Size(93, 20)
+        Me.tbMASl6.TabIndex = 169
+        Me.tbMASl6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label66
+        '
+        Me.Label66.AutoSize = True
+        Me.Label66.Location = New System.Drawing.Point(668, 567)
+        Me.Label66.Name = "Label66"
+        Me.Label66.Size = New System.Drawing.Size(186, 13)
+        Me.Label66.TabIndex = 168
+        Me.Label66.Text = "Active SIPP Mandates Mvmt < 6 mths"
+        '
+        'tbMASg6
+        '
+        Me.tbMASg6.Location = New System.Drawing.Point(908, 586)
+        Me.tbMASg6.Name = "tbMASg6"
+        Me.tbMASg6.Size = New System.Drawing.Size(93, 20)
+        Me.tbMASg6.TabIndex = 171
+        Me.tbMASg6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label67
+        '
+        Me.Label67.AutoSize = True
+        Me.Label67.Location = New System.Drawing.Point(668, 590)
+        Me.Label67.Name = "Label67"
+        Me.Label67.Size = New System.Drawing.Size(186, 13)
+        Me.Label67.TabIndex = 170
+        Me.Label67.Text = "Active SIPP Mandates Mvmt > 6 mths"
+        '
+        'tbMAIl6
+        '
+        Me.tbMAIl6.Location = New System.Drawing.Point(908, 636)
+        Me.tbMAIl6.Name = "tbMAIl6"
+        Me.tbMAIl6.Size = New System.Drawing.Size(93, 20)
+        Me.tbMAIl6.TabIndex = 173
+        Me.tbMAIl6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label68
+        '
+        Me.Label68.AutoSize = True
+        Me.Label68.Location = New System.Drawing.Point(668, 640)
+        Me.Label68.Name = "Label68"
+        Me.Label68.Size = New System.Drawing.Size(179, 13)
+        Me.Label68.TabIndex = 172
+        Me.Label68.Text = "Active ISA Mandates Mvmt < 6 mths"
+        '
+        'tbMAIg6
+        '
+        Me.tbMAIg6.Location = New System.Drawing.Point(908, 659)
+        Me.tbMAIg6.Name = "tbMAIg6"
+        Me.tbMAIg6.Size = New System.Drawing.Size(93, 20)
+        Me.tbMAIg6.TabIndex = 175
+        Me.tbMAIg6.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label69
+        '
+        Me.Label69.AutoSize = True
+        Me.Label69.Location = New System.Drawing.Point(668, 664)
+        Me.Label69.Name = "Label69"
+        Me.Label69.Size = New System.Drawing.Size(179, 13)
+        Me.Label69.TabIndex = 174
+        Me.Label69.Text = "Active ISA Mandates Mvmt > 6 mths"
+        '
+        'Label70
+        '
+        Me.Label70.AutoSize = True
+        Me.Label70.Location = New System.Drawing.Point(195, 858)
+        Me.Label70.Name = "Label70"
+        Me.Label70.Size = New System.Drawing.Size(155, 13)
+        Me.Label70.TabIndex = 176
+        Me.Label70.Text = "TOTAL AUM (LOANS + CASH)"
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.ClientSize = New System.Drawing.Size(1078, 704)
+        Me.ClientSize = New System.Drawing.Size(1078, 613)
+        Me.Controls.Add(Me.Label70)
+        Me.Controls.Add(Me.tbMAIg6)
+        Me.Controls.Add(Me.Label69)
+        Me.Controls.Add(Me.tbMAIl6)
+        Me.Controls.Add(Me.Label68)
+        Me.Controls.Add(Me.tbMASg6)
+        Me.Controls.Add(Me.Label67)
+        Me.Controls.Add(Me.tbMASl6)
+        Me.Controls.Add(Me.Label66)
+        Me.Controls.Add(Me.tbMATl6)
+        Me.Controls.Add(Me.Label65)
+        Me.Controls.Add(Me.tbMATg6)
+        Me.Controls.Add(Me.Label64)
+        Me.Controls.Add(Me.tbTAIg6)
+        Me.Controls.Add(Me.Label63)
+        Me.Controls.Add(Me.tbTAI)
+        Me.Controls.Add(Me.Label62)
+        Me.Controls.Add(Me.tbTASg6)
+        Me.Controls.Add(Me.Label61)
+        Me.Controls.Add(Me.tbTAS)
+        Me.Controls.Add(Me.Label60)
+        Me.Controls.Add(Me.tbTATl6)
+        Me.Controls.Add(Me.Label59)
+        Me.Controls.Add(Me.tbTATg6)
+        Me.Controls.Add(Me.Label58)
         Me.Controls.Add(Me.Label57)
         Me.Controls.Add(Me.tbDW)
         Me.Controls.Add(Me.LoadingMessage)
@@ -1290,8 +1543,8 @@ Partial Class Form1
         Me.Controls.Add(Me.tbTIS)
         Me.Controls.Add(Me.tbTIT)
         Me.Controls.Add(Me.tbTAA)
-        Me.Controls.Add(Me.tbTAI)
-        Me.Controls.Add(Me.tbTAS)
+        Me.Controls.Add(Me.tbTAIl6)
+        Me.Controls.Add(Me.tbTASl6)
         Me.Controls.Add(Me.tbTAT)
         Me.Controls.Add(Me.tbTNM2)
         Me.Controls.Add(Me.tbTNM3)
@@ -1338,7 +1591,6 @@ Partial Class Form1
         Me.Controls.Add(Me.tbNTA2)
         Me.Controls.Add(Me.tbNTA3)
         Me.Controls.Add(Me.tbNTA1)
-        Me.Controls.Add(Me.Label53)
         Me.Controls.Add(Me.Label43)
         Me.Controls.Add(Me.Label44)
         Me.Controls.Add(Me.Label45)
@@ -1466,7 +1718,6 @@ Partial Class Form1
     Friend WithEvents Label50 As Label
     Friend WithEvents Label51 As Label
     Friend WithEvents Label52 As Label
-    Friend WithEvents Label53 As Label
     Friend WithEvents tbNTA1 As TextBox
     Friend WithEvents tbNTA3 As TextBox
     Friend WithEvents tbNTA2 As TextBox
@@ -1513,8 +1764,8 @@ Partial Class Form1
     Friend WithEvents tbNMT3 As TextBox
     Friend WithEvents tbNMT1 As TextBox
     Friend WithEvents tbTAT As TextBox
-    Friend WithEvents tbTAS As TextBox
-    Friend WithEvents tbTAI As TextBox
+    Friend WithEvents tbTASl6 As TextBox
+    Friend WithEvents tbTAIl6 As TextBox
     Friend WithEvents tbTAA As TextBox
     Friend WithEvents tbTIA As TextBox
     Friend WithEvents tbTII As TextBox
@@ -1540,4 +1791,29 @@ Partial Class Form1
     Friend WithEvents LoadingMessage As Label
     Friend WithEvents tbDW As TextBox
     Friend WithEvents Label57 As Label
+    Friend WithEvents tbTATg6 As TextBox
+    Friend WithEvents Label58 As Label
+    Friend WithEvents tbTATl6 As TextBox
+    Friend WithEvents Label59 As Label
+    Friend WithEvents tbTAS As TextBox
+    Friend WithEvents Label60 As Label
+    Friend WithEvents tbTASg6 As TextBox
+    Friend WithEvents Label61 As Label
+    Friend WithEvents tbTAI As TextBox
+    Friend WithEvents Label62 As Label
+    Friend WithEvents tbTAIg6 As TextBox
+    Friend WithEvents Label63 As Label
+    Friend WithEvents tbMATg6 As TextBox
+    Friend WithEvents Label64 As Label
+    Friend WithEvents tbMATl6 As TextBox
+    Friend WithEvents Label65 As Label
+    Friend WithEvents tbMASl6 As TextBox
+    Friend WithEvents Label66 As Label
+    Friend WithEvents tbMASg6 As TextBox
+    Friend WithEvents Label67 As Label
+    Friend WithEvents tbMAIl6 As TextBox
+    Friend WithEvents Label68 As Label
+    Friend WithEvents tbMAIg6 As TextBox
+    Friend WithEvents Label69 As Label
+    Friend WithEvents Label70 As Label
 End Class

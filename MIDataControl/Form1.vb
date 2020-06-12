@@ -6,7 +6,7 @@ Imports System.Data.SqlClient
 
 Public Class Form1
 
-    Dim iSumAmount1, iSumAmount2, iSumAmount3, iSumAUM As Double
+    Dim iSumAmount1, iSumAmount2, iSumAmount3, iSumAUM, iTotal As Double
 
     Public Class Extract
         Property Description As String
@@ -81,8 +81,8 @@ Public Class Form1
         tbTNM2.Text = ""
         tbTNM3.Text = ""
         tbTAT.Text = ""
-        tbTAS.Text = ""
-        tbTAI.Text = ""
+        tbTASl6.Text = ""
+        tbTAIl6.Text = ""
         tbTAA.Text = ""
         tbTIT.Text = ""
         tbTIS.Text = ""
@@ -104,6 +104,18 @@ Public Class Form1
         tbSLB.Text = ""
         tbILB.Text = ""
         tbAUM.Text = ""
+        tbTATg6.Text = ""
+        tbTATl6.Text = ""
+        tbTASg6.Text = ""
+        tbTASl6.Text = ""
+        tbTAIg6.Text = ""
+        tbTAIl6.Text = ""
+        tbMATg6.Text = ""
+        tbMATl6.Text = ""
+        tbMASg6.Text = ""
+        tbMASl6.Text = ""
+        tbMAIg6.Text = ""
+        tbMAIl6.Text = ""
 
 
 
@@ -141,7 +153,7 @@ Public Class Form1
         newExtract.Description = "Week Ending - "
         newExtract.Amount1 = ""
         newExtract.Amount2 = ""
-        newExtract.Amount3 = ""
+        newExtract.Amount3 = enddate
         ExtractList.Add(newExtract)
 
         newExtract = New Extract
@@ -969,12 +981,72 @@ Public Class Form1
     End Sub
 
     Private Sub SetupTotalVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
+
+        iTotal = 0
+        Dim eLoop As Integer = 0
+        SetupTotalVolumes6mth(Extractlist, environ, connection, accttype, enddate, eLoop, iTotal)
+
+        eLoop = 1
+        SetupTotalVolumes6mth(Extractlist, environ, connection, accttype, enddate, eLoop, iTotal)
+
+        Dim newExtract As New Extract
+        Select Case accttype
+            Case 0
+
+                newExtract.Description = "Total Active Trading Accounts"
+            Case 1
+
+                newExtract.Description = "Total Active SIPP Accounts"
+            Case 2
+
+                newExtract.Description = "Total Active ISA Accounts"
+        End Select
+
+        newExtract.Amount1 = ""
+        newExtract.Amount2 = ""
+        newExtract.Amount3 = iTotal
+
+
+
+        Select Case accttype
+            Case 0
+
+                tbTAT.Text = iTotal
+
+            Case 1
+
+                tbTAS.Text = iTotal
+
+            Case 2
+
+                tbTAI.Text = iTotal
+
+        End Select
+
+        'iSumAmount1 += nTotal
+
+
+
+        Extractlist.Add(newExtract)
+
+
+
+    End Sub
+    Private Sub SetupTotalVolumes6mth(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date, eLoop As Integer, nTotal As Integer)
         Dim MySQL, strConn As String
         Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
         Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
         Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
+
+        Dim eSQL As String
+
+        If eLoop = 0 Then
+            eSQL = " and exists "
+        Else
+            eSQL = " and not exists "
+        End If
         MySQL = "select distinct a.accountid
                    from users u, accounts a
                    where a.userid = u.userid and 
@@ -1029,7 +1101,18 @@ Public Class Form1
                      u.activated = 5 and a.activated_bank = 5 
                      and u.isactive = 0  And  u.usertype = 0
                      and a.accounttype = @at1
-                     and a.accountid  = vt.accountid)
+                     and a.accountid  = vt.accountid  " & eSQL &
+             "  (select distinct accountid from lh_bals t
+                    where t.num_units > 0
+                      and t.accountid = a.accountid
+                      and t.datecreated > dateadd(month,  -6, @dt1)
+
+                      union all
+               select distinct accountid from lh_bals_suspense t
+                    where t.num_units > 0
+                      and t.accountid = a.accountid
+                      and t.datecreated > dateadd(month,  -6, @dt1)
+                         ))
 
                 group by  a.accountid
                 order by  a.accountid "
@@ -1057,11 +1140,26 @@ Public Class Form1
         Dim newExtract As New Extract
         Select Case accttype
             Case 0
-                newExtract.Description = "Total Active Trading Accounts"
+                If eLoop = 0 Then
+                    newExtract.Description = "Active Trading Accounts Mvmt < 6 mths"
+                Else
+                    newExtract.Description = "Active Trading Accounts Mvmt > 6 mths"
+                End If
+
             Case 1
-                newExtract.Description = "Total Active SIPP Accounts"
+                If eLoop = 0 Then
+                    newExtract.Description = "Active SIPP Accounts Mvmt < 6 mths"
+                Else
+                    newExtract.Description = "Active SIPP Accounts Mvmt > 6 mths"
+                End If
+
             Case 2
-                newExtract.Description = "Total Active ISA Accounts"
+                If eLoop = 0 Then
+                    newExtract.Description = "Active ISA Accounts Mvmt < 6 mths"
+                Else
+                    newExtract.Description = "Active ISA Accounts Mvmt > 6 mths"
+                End If
+
         End Select
 
         newExtract.Amount1 = ""
@@ -1072,19 +1170,34 @@ Public Class Form1
 
         Select Case accttype
             Case 0
-                tbTAT.Text = ncount
+                If eLoop = 0 Then
+                    tbTATl6.Text = ncount
+                Else
+                    tbTATg6.Text = ncount
+                End If
+
 
             Case 1
-                tbTAS.Text = ncount
+                If eLoop = 0 Then
+                    tbTASl6.Text = ncount
+                Else
+                    tbTASg6.Text = ncount
+                End If
+
 
             Case 2
-                tbTAI.Text = ncount
+                If eLoop = 0 Then
+                    tbTAIl6.Text = ncount
+                Else
+                    tbTAIg6.Text = ncount
+                End If
+
 
         End Select
 
         iSumAmount1 += ncount
 
-
+        iTotal += ncount
 
         Extractlist.Add(newExtract)
     End Sub
@@ -1245,12 +1358,65 @@ Public Class Form1
     End Sub
 
     Private Sub SetupMandatesVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
+        iTotal = 0
+        Dim eLoop As Integer = 0
+        SetupMandatesVolumes6mth(Extractlist, environ, connection, accttype, enddate, eLoop, iTotal)
+
+        eLoop = 1
+        SetupMandatesVolumes6mth(Extractlist, environ, connection, accttype, enddate, eLoop, iTotal)
+
+        Dim newExtract As New Extract
+
+
+
+        Select Case accttype
+            Case 0
+                newExtract.Description = "Total Active Trading Mandates"
+            Case 1
+                newExtract.Description = "Total Active SIPP Mandates"
+            Case 2
+                newExtract.Description = "Total Active ISA Mandates"
+        End Select
+
+        newExtract.Amount1 = ""
+        newExtract.Amount2 = ""
+        newExtract.Amount3 = iTotal
+
+
+
+
+        Select Case accttype
+            Case 0
+                tbMAT.Text = iTotal
+
+            Case 1
+                tbMAS.Text = iTotal
+
+            Case 2
+                tbMAI.Text = iTotal
+
+        End Select
+
+        'iSumAmount1 += nTotal
+
+
+
+        Extractlist.Add(newExtract)
+    End Sub
+
+    Private Sub SetupMandatesVolumes6mth(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date, eLoop As Integer, nTotal As Integer)
         Dim MySQL, strConn As String
         Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
         Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
         Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
+        Dim eSQL As String
+        If eLoop = 0 Then
+            eSQL = " and exists "
+        Else
+            eSQL = " and not exists "
+        End If
         MySQL = "select distinct a.accountid
                 from mandates m, accounts a
                    where m.accountid = a.accountid
@@ -1270,7 +1436,20 @@ Public Class Form1
                     group by g.accountid
                     order by g.accountid   ) vt
 
-                    on a.accountid = vt.accountid
+                    on a.accountid = vt.accountid  " & eSQL &
+           "  (
+                     select distinct accountid from lh_bals t
+                    where t.num_units > 0
+                      and t.accountid = a.accountid
+                      and t.datecreated > dateadd(month,  -6, @dt1)
+
+                      union all
+               select distinct accountid from lh_bals_suspense t
+                    where t.num_units > 0
+                      and t.accountid = a.accountid
+                      and t.datecreated > dateadd(month,  -6, @dt1)
+
+                     )        
 
                where a.userid = u.userid and
                      u.activated = 5 and a.activated_bank = 5 
@@ -1300,35 +1479,64 @@ Public Class Form1
         Dim newExtract As New Extract
         Select Case accttype
             Case 0
-                newExtract.Description = "Total Active Trading Mandates"
+                If eLoop = 0 Then
+                    newExtract.Description = "Active Trading Mandates Mvmt < 6 mths"
+                Else
+                    newExtract.Description = "Active Trading Mandates Mvmt > 6 mths"
+                End If
+
             Case 1
-                newExtract.Description = "Total Active SIPP Mandates"
+                If eLoop = 0 Then
+                    newExtract.Description = "Active SIPP Mandates Mvmt < 6 mths"
+                Else
+                    newExtract.Description = "Active SIPP Mandates Mvmt > 6 mths"
+                End If
+
             Case 2
-                newExtract.Description = "Total Active ISA Mandates"
+                If eLoop = 0 Then
+                    newExtract.Description = "Active ISA Mandates Mvmt < 6 mths"
+                Else
+                    newExtract.Description = "Active ISA Mandates Mvmt > 6 mths"
+                End If
+
         End Select
+
 
         newExtract.Amount1 = ""
         newExtract.Amount2 = ""
         newExtract.Amount3 = ncount
 
-
-
-
         Select Case accttype
             Case 0
-                tbMAT.Text = ncount
+                If eLoop = 0 Then
+                    tbMATl6.Text = ncount
+                Else
+                    tbMATg6.Text = ncount
+                End If
+
 
             Case 1
-                tbMAS.Text = ncount
+                If eLoop = 0 Then
+                    tbMASl6.Text = ncount
+                Else
+                    tbMASg6.Text = ncount
+                End If
+
 
             Case 2
-                tbMAI.Text = ncount
-
+                If eLoop = 0 Then
+                    tbMAIl6.Text = ncount
+                Else
+                    tbMAIg6.Text = ncount
+                End If
         End Select
+
+
+
 
         iSumAmount1 += ncount
 
-
+        iTotal += ncount
 
         Extractlist.Add(newExtract)
     End Sub
@@ -1727,7 +1935,13 @@ Public Class Form1
 
     End Sub
 
+    Private Sub TextBox4_TextChanged(sender As Object, e As EventArgs) Handles tbTASg6.TextChanged
 
+    End Sub
+
+    Private Sub Label68_Click(sender As Object, e As EventArgs) Handles Label68.Click
+
+    End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         Dim xFileName As String
