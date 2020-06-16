@@ -116,6 +116,9 @@ Public Class Form1
         tbMASl6.Text = ""
         tbMAIg6.Text = ""
         tbMAIl6.Text = ""
+        tbTMB.Text = ""
+        tbTAS.Text = ""
+        tbTAA.Text = ""
 
 
 
@@ -272,6 +275,8 @@ Public Class Form1
         SetupMandatesVolumes(ExtractList, environ, connection, 2, enddate)
 
         SetupMandatesVolumesTotal(ExtractList)
+
+        SetupActiveMandatesBalance(ExtractList, environ, connection, enddate)
 
         newExtract = New Extract
         newExtract.Description = "Lender Mandates - Inactive "
@@ -1543,6 +1548,7 @@ Public Class Form1
 
     Private Sub SetupMandatesVolumesTotal(Extractlist As List(Of Extract))
 
+
         Dim newExtract As New Extract
 
         newExtract.Description = "TOTAL ACTIVE MANDATES"
@@ -1552,6 +1558,99 @@ Public Class Form1
 
 
         tbTAM.Text = iSumAmount1
+
+
+        Extractlist.Add(newExtract)
+
+
+
+    End Sub
+
+    Private Sub SetupActiveMandatesBalance(Extractlist As List(Of Extract), environ As String, connection As String, enddate As Date)
+        Dim MySQL, strConn As String
+        Dim dAmount As Double
+        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
+        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
+        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+        Dim dr1, dr2, dr3 As DataRow
+        Dim ds1 As DataSet
+
+
+        MySQL = "select sum(f.balance) as theamount
+                from (
+                 Select            fb.amount  as balance
+                   From select_active_accounts a  
+        inner join
+          ( select distinct a.accountid
+                from mandates m, accounts a
+                where m.accountid = a.accountid
+                 and m.isactive = 0
+                   ) mt on a.accountid = mt.accountid
+                 Left outer  join
+                 (select vt.accountid,  max_fin_balid, t.amount
+        from 
+        ( 
+        select accountid, max(fin_balid) as max_fin_balid
+        from fin_bals s
+
+        where s.datecreated < @dt1
+        group by accountid
+        ) vt
+        inner join fin_bals t on t.fin_balid = vt.max_fin_balid
+        where t.amount > 0 ) fb on fb.accountid = a.accountid
+                 where fb.accountid = a.accountid
+              union all
+                 Select            fb.amount as balance
+                   From select_active_accounts a
+        inner join
+          ( select distinct a.accountid
+                from mandates m, accounts a
+                where m.accountid = a.accountid
+                 and m.isactive = 0
+                   ) mt on a.accountid = mt.accountid
+                  Left outer  join
+            (select vt.accountid,  max_fin_bals_suspenseid, t.amount
+        from 
+        ( 
+        select accountid, max(fin_bals_suspenseid) as max_fin_bals_suspenseid
+        from fin_bals_suspense s
+
+        where s.datecreated < @dt1
+        group by accountid
+        ) vt
+        inner join fin_bals_suspense t on t.fin_bals_suspenseid = vt.max_fin_bals_suspenseid
+        where t.amount > 0 )   fb on fb.accountid = a.accountid
+                 where fb.accountid = a.accountid    ) f"
+
+
+
+        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
+        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
+        MyConn.Open()
+        ds1 = New DataSet
+        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
+
+
+        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
+
+        Adaptor.Fill(ds1)
+        MyConn.Close()
+
+        Dim nSumm As Double = 0
+        If ds1.Tables(0).Rows.Count > 0 Then
+            With ds1.Tables(0).Rows(0)
+                nSumm = ds1.Tables(0).Rows(0).Item(“theamount”)
+            End With
+        End If
+        Dim newExtract As New Extract
+
+        newExtract.Description = "TOTAL ACTIVE MANDATES BALANCES"
+        newExtract.Amount1 = ""
+        newExtract.Amount2 = ""
+        newExtract.Amount3 = nSumm
+
+
+        tbTMB.Text = PenceToCurrencyStringPounds(nSumm)
 
 
         Extractlist.Add(newExtract)
