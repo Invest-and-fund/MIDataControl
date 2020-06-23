@@ -6,7 +6,7 @@ Imports System.Data.SqlClient
 
 Public Class Form1
 
-    Dim iSumAmount1, iSumAmount2, iSumAmount3, iSumAUM, iTotal As Double
+    Dim iSumAmount1, iSumAmount2, iSumAmount3, iSumAUM, iTotal, iSumIUT As Double
 
     Public Class Extract
         Property Description As String
@@ -241,13 +241,14 @@ Public Class Form1
         SetupTotalVolumesTotal(ExtractList)
 
         newExtract = New Extract
-        newExtract.Description = "Lender Accounts - Inctive "
+        newExtract.Description = "Lender Accounts - Inactive "
         newExtract.Amount1 = ""
         newExtract.Amount2 = ""
         newExtract.Amount3 = ""
         ExtractList.Add(newExtract)
 
         iSumAmount1 = 0
+        iSumIUT = 0
 
         LoadingMessage.Text = "This list takes a while to load - calculating Inactive Lender total "
         Me.Refresh()
@@ -257,6 +258,25 @@ Public Class Form1
         SetupInactiveVolumes(ExtractList, environ, connection, 2, enddate)
 
         SetupInactiveVolumesTotal(ExtractList)
+        newExtract = New Extract
+        newExtract.Description = "Lender Accounts - Unfunded "
+        newExtract.Amount1 = ""
+        newExtract.Amount2 = ""
+        newExtract.Amount3 = ""
+        ExtractList.Add(newExtract)
+
+        iSumAmount1 = 0
+
+
+        LoadingMessage.Text = "This list takes a while to load - calculating Unfunded Lender total "
+        Me.Refresh()
+
+        SetupUnfundedVolumes(ExtractList, environ, connection, 0, enddate)
+        SetupUnfundedVolumes(ExtractList, environ, connection, 1, enddate)
+        SetupUnfundedVolumes(ExtractList, environ, connection, 2, enddate)
+
+        SetupUnfundedVolumesTotal(ExtractList)
+        SetupInactiveUnfundedTotal(ExtractList)
 
         newExtract = New Extract
         newExtract.Description = "Lender Mandates - Active "
@@ -1048,9 +1068,10 @@ Public Class Form1
         Dim eSQL As String
 
         If eLoop = 0 Then
-            eSQL = " and exists "
-        Else
             eSQL = " and not exists "
+        Else
+
+            eSQL = " and exists "
         End If
         MySQL = "select distinct a.accountid
                    from users u, accounts a
@@ -1110,13 +1131,13 @@ Public Class Form1
              "  (select distinct accountid from lh_bals t
                     where t.num_units > 0
                       and t.accountid = a.accountid
-                      and t.datecreated > dateadd(month,  -6, @dt1)
+                      and t.datecreated > dateadd(month,  -3, @dt1)
 
                       union all
                select distinct accountid from lh_bals_suspense t
                     where t.num_units > 0
                       and t.accountid = a.accountid
-                      and t.datecreated > dateadd(month,  -6, @dt1)
+                      and t.datecreated > dateadd(month,  -3, @dt1)
                          ))
 
                 group by  a.accountid
@@ -1146,23 +1167,23 @@ Public Class Form1
         Select Case accttype
             Case 0
                 If eLoop = 0 Then
-                    newExtract.Description = "Active Trading Accounts Mvmt < 6 mths"
+                    newExtract.Description = "Active Trading Accounts - Live"
                 Else
-                    newExtract.Description = "Active Trading Accounts Mvmt > 6 mths"
+                    newExtract.Description = "Active Trading Accounts - Currently Lending"
                 End If
 
             Case 1
                 If eLoop = 0 Then
-                    newExtract.Description = "Active SIPP Accounts Mvmt < 6 mths"
+                    newExtract.Description = "Active SIPP Accounts - Live"
                 Else
-                    newExtract.Description = "Active SIPP Accounts Mvmt > 6 mths"
+                    newExtract.Description = "Active SIPP Accounts - Currently Lending"
                 End If
 
             Case 2
                 If eLoop = 0 Then
-                    newExtract.Description = "Active ISA Accounts Mvmt < 6 mths"
+                    newExtract.Description = "Active ISA Accounts - Live"
                 Else
-                    newExtract.Description = "Active ISA Accounts Mvmt > 6 mths"
+                    newExtract.Description = "Active ISA Accounts - Currently Lending"
                 End If
 
         End Select
@@ -1354,6 +1375,130 @@ Public Class Form1
 
 
         tbTIA.Text = iSumAmount1
+        iSumIUT += iSumAmount1
+
+        Extractlist.Add(newExtract)
+
+
+
+    End Sub
+
+    Private Sub SetupUnfundedVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
+        Dim MySQL, strConn As String
+        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
+        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
+        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+        Dim dr1, dr2, dr3 As DataRow
+        Dim ds1 As DataSet
+        MySQL = "select distinct a.accountid
+                   from users u, accounts a
+                   where a.userid = u.userid and 
+                     u.activated = 5 and a.activated_bank = 5 
+                     and u.isactive = 0  And  u.usertype = 0
+                     and a.accounttype = @at1
+                     and a.accountid not in
+
+                (select distinct  vt.accountid
+                from
+                (select  a.accountid
+                from  lh_bals l
+                  where u.userid = a.userid
+                  and  u.activated = 5
+                  and a.activated_bank = 5
+                  and (u.activated_cert = 5 or u.veteran_1914 = 0)  
+                  and u.isactive = 0
+                  and a.isactive = 0
+                  and a.accountid = l.accountid
+                  and l.num_units > 0
+                  and l.datecreated < @dt1
+                  and a.accounttype = @at1  ) vt      )
+
+
+
+                group by  a.accountid
+                order by  a.accountid "
+
+
+        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
+        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
+        MyConn.Open()
+        ds1 = New DataSet
+        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
+
+        Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
+        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
+
+        Adaptor.Fill(ds1)
+        MyConn.Close()
+
+        Dim ncount As Integer = ds1.Tables(0).Rows.Count
+
+
+        Dim newExtract As New Extract
+        Select Case accttype
+            Case 0
+                newExtract.Description = "Total Unfunded Trading Accounts"
+            Case 1
+                newExtract.Description = "Total Unfunded SIPP Accounts"
+            Case 2
+                newExtract.Description = "Total Unfunded ISA Accounts"
+        End Select
+
+        newExtract.Amount1 = ""
+        newExtract.Amount2 = ""
+        newExtract.Amount3 = ncount
+
+
+
+        Select Case accttype
+            Case 0
+                tbTUT.Text = ncount
+
+            Case 1
+                tbTUS.Text = ncount
+
+            Case 2
+                tbTUI.Text = ncount
+
+        End Select
+
+        iSumAmount1 += ncount
+
+
+
+        Extractlist.Add(newExtract)
+    End Sub
+
+    Private Sub SetupUnfundedVolumesTotal(Extractlist As List(Of Extract))
+
+        Dim newExtract As New Extract
+
+        newExtract.Description = "TOTAL UNFUNDED ACCOUNTS"
+        newExtract.Amount1 = ""
+        newExtract.Amount2 = ""
+        newExtract.Amount3 = iSumAmount1
+
+
+        tbTUA.Text = iSumAmount1
+        iSumIUT += iSumAmount1
+
+        Extractlist.Add(newExtract)
+
+
+
+    End Sub
+
+    Private Sub SetupInactiveUnfundedTotal(Extractlist As List(Of Extract))
+
+        Dim newExtract As New Extract
+
+        newExtract.Description = "TOTAL INACTIVE AND UNFUNDED ACCOUNTS"
+        newExtract.Amount1 = ""
+        newExtract.Amount2 = ""
+        newExtract.Amount3 = iSumIUT
+
+
+        tbIUA.Text = iSumIUT
 
 
         Extractlist.Add(newExtract)
@@ -1418,9 +1563,10 @@ Public Class Form1
         Dim ds1 As DataSet
         Dim eSQL As String
         If eLoop = 0 Then
-            eSQL = " and exists "
-        Else
             eSQL = " and not exists "
+        Else
+
+            eSQL = " and exists "
         End If
         MySQL = "select distinct a.accountid
                 from mandates m, accounts a
@@ -1446,13 +1592,13 @@ Public Class Form1
                      select distinct accountid from lh_bals t
                     where t.num_units > 0
                       and t.accountid = a.accountid
-                      and t.datecreated > dateadd(month,  -6, @dt1)
+                      and t.datecreated > dateadd(month,  -3, @dt1)
 
                       union all
                select distinct accountid from lh_bals_suspense t
                     where t.num_units > 0
                       and t.accountid = a.accountid
-                      and t.datecreated > dateadd(month,  -6, @dt1)
+                      and t.datecreated > dateadd(month,  -3, @dt1)
 
                      )        
 
@@ -1485,23 +1631,23 @@ Public Class Form1
         Select Case accttype
             Case 0
                 If eLoop = 0 Then
-                    newExtract.Description = "Active Trading Mandates Mvmt < 6 mths"
+                    newExtract.Description = "Active Trading Mandates - Active"
                 Else
-                    newExtract.Description = "Active Trading Mandates Mvmt > 6 mths"
+                    newExtract.Description = "Active Trading Mandates - Currently Lending"
                 End If
 
             Case 1
                 If eLoop = 0 Then
-                    newExtract.Description = "Active SIPP Mandates Mvmt < 6 mths"
+                    newExtract.Description = "Active SIPP Mandates - Active"
                 Else
-                    newExtract.Description = "Active SIPP Mandates Mvmt > 6 mths"
+                    newExtract.Description = "Active SIPP Mandates - Currently Lending"
                 End If
 
             Case 2
                 If eLoop = 0 Then
-                    newExtract.Description = "Active ISA Mandates Mvmt < 6 mths"
+                    newExtract.Description = "Active ISA Mandates - Active"
                 Else
-                    newExtract.Description = "Active ISA Mandates Mvmt > 6 mths"
+                    newExtract.Description = "Active ISA Mandates - Currently Lending"
                 End If
 
         End Select
@@ -2035,6 +2181,18 @@ Public Class Form1
     End Sub
 
     Private Sub TextBox4_TextChanged(sender As Object, e As EventArgs) Handles tbTASg6.TextChanged
+
+    End Sub
+
+    Private Sub Label61_Click(sender As Object, e As EventArgs) Handles Label61.Click
+
+    End Sub
+
+    Private Sub Label25_Click(sender As Object, e As EventArgs) Handles Label25.Click
+
+    End Sub
+
+    Private Sub Label63_Click(sender As Object, e As EventArgs) Handles Label63.Click
 
     End Sub
 
