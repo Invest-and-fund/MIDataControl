@@ -61,9 +61,9 @@ Public Class Form1
         tbTIS.Text = ""
         tbTII.Text = ""
         tbTIA.Text = ""
-        tbMAT.Text = ""
-        tbMAS.Text = ""
-        tbMAI.Text = ""
+        'tbMAT.Text = ""
+        'tbMAS.Text = ""
+        'tbMAI.Text = ""
         tbTAM.Text = ""
 
         tbTAB.Text = ""
@@ -828,17 +828,13 @@ Public Class Form1
                     Case 0
                         tbTAIl3.Text = ncount
                     Case 1
-                        tbTAIl3.Text = ncount
+                        tbTAIl6.Text = ncount
                     Case 2
                         tbTAIl12.Text = ncount
                     Case 3
                         tbTAIg12.Text = ncount
                 End Select
-                If eloop = 0 Then
-                    tbTAIl3.Text = ncount
-                Else
-                    tbTAIl6.Text = ncount
-                End If
+
 
 
         End Select
@@ -1157,17 +1153,17 @@ Public Class Form1
 
 
 
-        Select Case accttype
-            Case 0
-                tbMAT.Text = iTotal
+        'Select Case accttype
+        '    Case 0
+        '        tbMAT.Text = iTotal
 
-            Case 1
-                tbMAS.Text = iTotal
+        '    Case 1
+        '        tbMAS.Text = iTotal
 
-            Case 2
-                tbMAI.Text = iTotal
+        '    Case 2
+        '        tbMAI.Text = iTotal
 
-        End Select
+        'End Select
 
 
 
