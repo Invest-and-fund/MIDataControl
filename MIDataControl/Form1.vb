@@ -320,13 +320,13 @@ Public Class Form1
 
     Private Sub SetupNewVolumes(startdate As Date, enddate As Date, Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer)
         Dim MySQL, strConn As String
-        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
-        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
-        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
-
-        MySQL = "select distinct u.userid, a.accountid
+        Using con As New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString)
+            Try
+                Dim adapter As SqlDataAdapter = New SqlDataAdapter()
+                MySQL = "select distinct u.userid, a.accountid
                    from users u, accounts a
 
                     inner join
@@ -334,8 +334,56 @@ Public Class Form1
               ( select  max (g.datecreated) as maxdatecreated, g.accountid
                     from get_user_accounts_history g
                     where  g.datecreated < @dt1
-                    group by g.accountid
-                    order by g.accountid   ) vt
+                    group by g.accountid   ) vt
+               
+
+                    on a.accountid = vt.accountid
+
+               where a.userid = u.userid and
+                     u.activated = 5 and a.activated_bank = 5 
+                     and u.isactive = 0  And  u.usertype = 0
+                     and a.accounttype = @at1"
+
+
+                Dim cmd As SqlCommand = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@dt1", startdate))
+                    .Add(New SqlParameter("@at1", accttype))
+                End With
+                adapter.SelectCommand = cmd
+
+                ds1 = New DataSet
+
+                adapter.Fill(ds1)
+
+                Dim ncount As Integer = ds1.Tables(0).Rows.Count
+
+
+                Dim newExtract As New Extract
+                Select Case accttype
+                    Case 0
+                        newExtract.Description = "New Trading Accounts"
+                    Case 1
+                        newExtract.Description = "New SIPP Accounts"
+                    Case 2
+                        newExtract.Description = "New ISA Accounts"
+                End Select
+
+                newExtract.Amount1 = ncount
+
+                adapter = New SqlDataAdapter()
+                MySQL = "select distinct u.userid, a.accountid
+                   from users u, accounts a
+
+                    inner join
+
+              ( select  max (g.datecreated) as maxdatecreated, g.accountid
+                    from get_user_accounts_history g
+                    where  g.datecreated < @dt1
+                    group by g.accountid   ) vt
+  
 
                     on a.accountid = vt.accountid
 
@@ -346,88 +394,48 @@ Public Class Form1
                      and a.accountid  = vt.accountid"
 
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = startdate
-        Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
+                cmd = New SqlCommand(MySQL, con)
 
-        Adaptor.Fill(ds1)
-        MyConn.Close()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@dt1", enddate))
+                    .Add(New SqlParameter("@at1", accttype))
+                End With
+                adapter.SelectCommand = cmd
 
-        Dim ncount As Integer = ds1.Tables(0).Rows.Count
+                ds1 = New DataSet
 
+                adapter.Fill(ds1)
 
-        Dim newExtract As New Extract
-        Select Case accttype
-            Case 0
-                newExtract.Description = "New Trading Accounts"
-            Case 1
-                newExtract.Description = "New SIPP Accounts"
-            Case 2
-                newExtract.Description = "New ISA Accounts"
-        End Select
+                con.Close()
 
-        newExtract.Amount1 = ncount
+                ncount = ds1.Tables(0).Rows.Count
+                newExtract.Amount2 = ncount
+                newExtract.Amount3 = newExtract.Amount2 - newExtract.Amount1
 
-        MySQL = "select distinct u.userid, a.accountid
-                   from users u, accounts a
+                Select Case accttype
+                    Case 0
 
-                    inner join
+                        tbNTA3.Text = newExtract.Amount3
+                    Case 1
 
-              ( select  max (g.datecreated) as maxdatecreated, g.accountid
-                    from get_user_accounts_history g
-                    where  g.datecreated < @dt1
-                    group by g.accountid
-                    order by g.accountid   ) vt
+                        tbNS3.Text = newExtract.Amount3
+                    Case 2
 
-                    on a.accountid = vt.accountid
-
-               where a.userid = u.userid and
-                     u.activated = 5 and a.activated_bank = 5 
-                     and u.isactive = 0  And  u.usertype = 0
-                     and a.accounttype = @at1
-                     and a.accountid  = vt.accountid"
+                        tbNISA3.Text = newExtract.Amount3
+                End Select
 
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
-        Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
-
-        Adaptor.Fill(ds1)
-        MyConn.Close()
-
-        ncount = ds1.Tables(0).Rows.Count
-        newExtract.Amount2 = ncount
-        newExtract.Amount3 = newExtract.Amount2 - newExtract.Amount1
-
-        Select Case accttype
-            Case 0
-                'tbNTA1.Text = newExtract.Amount1
-                'tbNTA2.Text = newExtract.Amount2
-                tbNTA3.Text = newExtract.Amount3
-            Case 1
-                'tbNS1.Text = newExtract.Amount1
-                'tbNS2.Text = newExtract.Amount2
-                tbNS3.Text = newExtract.Amount3
-            Case 2
-                'tbNISA1.Text = newExtract.Amount1
-                'tbNISA2.Text = newExtract.Amount2
-                tbNISA3.Text = newExtract.Amount3
-        End Select
-
-        'iSumAmount1 += newExtract.Amount1
-        'iSumAmount2 += newExtract.Amount2
-        iSumAmount3 += newExtract.Amount3
+                iSumAmount3 += newExtract.Amount3
 
 
-        Extractlist.Add(newExtract)
+                Extractlist.Add(newExtract)
+            Catch ex As Exception
+            Finally
+
+            End Try
+        End Using
+
     End Sub
 
     Private Sub SetupNewVolumesTotals(Extractlist As List(Of Extract))
@@ -435,12 +443,10 @@ Public Class Form1
         Dim newExtract As New Extract
 
         newExtract.Description = "TOTAL NEW ACCOUNTS"
-        'newExtract.Amount1 = iSumAmount1
-        'newExtract.Amount2 = iSumAmount2
+
         newExtract.Amount3 = iSumAmount3
 
-        'tbTNA1.Text = iSumAmount1
-        'tbTNA2.Text = iSumAmount2
+
         tbTNA3.Text = iSumAmount3
 
         Extractlist.Add(newExtract)
@@ -451,61 +457,70 @@ Public Class Form1
 
     Private Sub SetupNewIFISA(startdate As Date, enddate As Date, Extractlist As List(Of Extract), environ As String, connection As String)
         Dim MySQL, strConn As String
-        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
-        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
-        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
-        MySQL = "select distinct  f.accountid
+        Using con As New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString)
+            Try
+                Dim adapter As SqlDataAdapter = New SqlDataAdapter()
+                MySQL = "select distinct  f.accountid
                   from fin_trans f 
                   where f.transtype = 1021
                    and  f.datecreated < @dt1 "
 
+                Dim cmd As SqlCommand = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@dt1", startdate))
+                End With
+                adapter.SelectCommand = cmd
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = startdate
+                ds1 = New DataSet
 
+                adapter.Fill(ds1)
 
-        Adaptor.Fill(ds1)
-        MyConn.Close()
-
-        Dim ncount As Integer = ds1.Tables(0).Rows.Count
-
-
-        Dim newExtract As New Extract
-
-        newExtract.Description = "New ISA Transfer In"
+                Dim ncount As Integer = ds1.Tables(0).Rows.Count
 
 
-        newExtract.Amount1 = ncount
+                Dim newExtract As New Extract
 
-        MySQL = "select distinct  f.accountid
+                newExtract.Description = "New ISA Transfer In"
+
+
+                newExtract.Amount1 = ncount
+
+                adapter = New SqlDataAdapter()
+                MySQL = "select distinct  f.accountid
                   from fin_trans f 
                   where f.transtype = 1021
                    and  f.datecreated < @dt1"
 
+                cmd = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@dt1", enddate))
+                End With
+                adapter.SelectCommand = cmd
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
+                ds1 = New DataSet
+
+                adapter.Fill(ds1)
+
+                con.Close()
+
+                ncount = ds1.Tables(0).Rows.Count
+                newExtract.Amount2 = ncount
+                newExtract.Amount3 = newExtract.Amount2 - newExtract.Amount1
 
 
-        Adaptor.Fill(ds1)
-        MyConn.Close()
+                Extractlist.Add(newExtract)
+            Catch ex As Exception
+            Finally
 
-        ncount = ds1.Tables(0).Rows.Count
-        newExtract.Amount2 = ncount
-        newExtract.Amount3 = newExtract.Amount2 - newExtract.Amount1
-
-
-        Extractlist.Add(newExtract)
+            End Try
+        End Using
     End Sub
 
 
@@ -513,9 +528,7 @@ Public Class Form1
 
     Private Sub SetupNewMandates(startdate As Date, enddate As Date, Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer)
         Dim MySQL, strConn As String
-        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
-        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
-        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
 
@@ -532,8 +545,10 @@ Public Class Form1
         End Select
 
 
-
-        MySQL = "Select distinct   a.accountid
+        Using con As New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString)
+            Try
+                Dim adapter As SqlDataAdapter = New SqlDataAdapter()
+                MySQL = "Select distinct   a.accountid
                 from
                 mandates m, accounts a
                 where a.accountid = m.accountid
@@ -547,43 +562,49 @@ Public Class Form1
                 mandates n
                 where m.datecreated < @dt2)"
 
+                Dim cmd As SqlCommand = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@dt1", enddate))
+                    .Add(New SqlParameter("@at1", accttype))
+                    .Add(New SqlParameter("@dt2", startdate))
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
-        Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
-        Adaptor.SelectCommand.Parameters.Add("@dt2", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = startdate
-        Adaptor.Fill(ds1)
-        MyConn.Close()
+                End With
+                adapter.SelectCommand = cmd
 
-        Dim ncount As Integer = ds1.Tables(0).Rows.Count
-        newExtract.Amount3 = ncount
+                ds1 = New DataSet
 
+                adapter.Fill(ds1)
 
-        Select Case accttype
-            Case 0
-                'tbNMT1.Text = newExtract.Amount1
-                'tbNMT2.Text = newExtract.Amount2
-                tbNMT3.Text = newExtract.Amount3
-            Case 1
-                'tbNMS1.Text = newExtract.Amount1
-                'tbNMS2.Text = newExtract.Amount2
-                tbNMS3.Text = newExtract.Amount3
-            Case 2
-                'tbNMI1.Text = newExtract.Amount1
-                'tbNMI2.Text = newExtract.Amount2
-                tbNMI3.Text = newExtract.Amount3
-        End Select
+                con.Close()
 
-        'iSumAmount1 += newExtract.Amount1
-        'iSumAmount2 += newExtract.Amount2
-        iSumAmount3 += newExtract.Amount3
+                Dim ncount As Integer = ds1.Tables(0).Rows.Count
+                newExtract.Amount3 = ncount
 
 
-        Extractlist.Add(newExtract)
+                Select Case accttype
+                    Case 0
+
+                        tbNMT3.Text = newExtract.Amount3
+                    Case 1
+
+                        tbNMS3.Text = newExtract.Amount3
+                    Case 2
+
+                        tbNMI3.Text = newExtract.Amount3
+                End Select
+
+
+                iSumAmount3 += newExtract.Amount3
+
+
+                Extractlist.Add(newExtract)
+            Catch ex As Exception
+            Finally
+
+            End Try
+        End Using
     End Sub
 
     Private Sub SetupNewMandatesTotals(Extractlist As List(Of Extract))
@@ -591,12 +612,10 @@ Public Class Form1
         Dim newExtract As New Extract
 
         newExtract.Description = "TOTAL NEW MANDATES"
-        'newExtract.Amount1 = iSumAmount1
-        'newExtract.Amount2 = iSumAmount2
+
         newExtract.Amount3 = iSumAmount3
 
-        'tbTNM1.Text = iSumAmount1
-        'tbTNM2.Text = iSumAmount2
+
         tbTNM3.Text = iSumAmount3
 
         Extractlist.Add(newExtract)
@@ -673,15 +692,15 @@ Public Class Form1
     End Sub
     Private Sub SetupTotalVolumes6mth(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, startdate As Date, enddate As Date, nTotal As Integer, eloop As Integer)
         Dim MySQL, strConn As String
-        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
-        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
-        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
 
         Dim eSQL As String
-
-        MySQL = "select distinct a.accountid
+        Using con As New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString)
+            Try
+                Dim adapter As SqlDataAdapter = New SqlDataAdapter()
+                MySQL = "select distinct a.accountid
                    from users u, accounts a
                    where a.userid = u.userid and 
                      u.activated = 5 and a.activated_bank = 5 
@@ -725,125 +744,129 @@ Public Class Form1
                 group by  a.accountid
                 order by  a.accountid "
 
+                Dim cmd As SqlCommand = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@at1", accttype))
+                    .Add(New SqlParameter("@dt1", enddate))
+                    .Add(New SqlParameter("@dt2", startdate))
+
+                End With
+                adapter.SelectCommand = cmd
+
+                ds1 = New DataSet
+
+                adapter.Fill(ds1)
+
+                con.Close()
+
+                Dim ncount As Integer = ds1.Tables(0).Rows.Count
 
 
-
-
-
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
-
-        Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
-        Adaptor.SelectCommand.Parameters.Add("@dt2", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = startdate
-
-        Adaptor.Fill(ds1)
-        MyConn.Close()
-
-        Dim ncount As Integer = ds1.Tables(0).Rows.Count
-
-
-        Dim newExtract As New Extract
-        Select Case accttype
-            Case 0
-                Select Case eloop
+                Dim newExtract As New Extract
+                Select Case accttype
                     Case 0
-                        newExtract.Description = "Active Standard Accounts < 3 Months"
+                        Select Case eloop
+                            Case 0
+                                newExtract.Description = "Active Standard Accounts < 3 Months"
+                            Case 1
+                                newExtract.Description = "Active Standard Accounts < 6 Months"
+                            Case 2
+                                newExtract.Description = "Active Standard Accounts < 12 Months"
+                            Case 3
+                                newExtract.Description = "Active Standard Accounts > 12 Months"
+                        End Select
+
                     Case 1
-                        newExtract.Description = "Active Standard Accounts < 6 Months"
+                        Select Case eloop
+                            Case 0
+                                newExtract.Description = "Active SIPP Accounts < 3 Months"
+                            Case 1
+                                newExtract.Description = "Active SIPP Accounts < 6 Months"
+                            Case 2
+                                newExtract.Description = "Active SIPP Accounts < 12 Months"
+                            Case 3
+                                newExtract.Description = "Active SIPP Accounts > 12 Months"
+                        End Select
+
+
                     Case 2
-                        newExtract.Description = "Active Standard Accounts < 12 Months"
-                    Case 3
-                        newExtract.Description = "Active Standard Accounts > 12 Months"
+                        Select Case eloop
+                            Case 0
+                                newExtract.Description = "Active ISA Accounts < 3 Months"
+                            Case 1
+                                newExtract.Description = "Active ISA Accounts < 6 Months"
+                            Case 2
+                                newExtract.Description = "Active ISA Accounts < 12 Months"
+                            Case 3
+                                newExtract.Description = "Active ISA Accounts > 12 Months"
+                        End Select
+
+
                 End Select
 
-            Case 1
-                Select Case eloop
+                newExtract.Amount1 = ""
+                newExtract.Amount2 = ""
+                newExtract.Amount3 = ncount
+
+
+
+                Select Case accttype
                     Case 0
-                        newExtract.Description = "Active SIPP Accounts < 3 Months"
+                        Select Case eloop
+                            Case 0
+                                tbTATl3.Text = ncount
+                            Case 1
+                                tbTATl6.Text = ncount
+                            Case 2
+                                tbTATl12.Text = ncount
+                            Case 3
+                                tbTATg12.Text = ncount
+                        End Select
+
+
+
                     Case 1
-                        newExtract.Description = "Active SIPP Accounts < 6 Months"
+                        Select Case eloop
+                            Case 0
+                                tbTASl3.Text = ncount
+                            Case 1
+                                tbTASl6.Text = ncount
+                            Case 2
+                                tbTASl12.Text = ncount
+                            Case 3
+                                tbTASg12.Text = ncount
+                        End Select
+
+
+
                     Case 2
-                        newExtract.Description = "Active SIPP Accounts < 12 Months"
-                    Case 3
-                        newExtract.Description = "Active SIPP Accounts > 12 Months"
+                        Select Case eloop
+                            Case 0
+                                tbTAIl3.Text = ncount
+                            Case 1
+                                tbTAIl6.Text = ncount
+                            Case 2
+                                tbTAIl12.Text = ncount
+                            Case 3
+                                tbTAIg12.Text = ncount
+                        End Select
+
+
+
                 End Select
 
+                iSumAmount1 += ncount
 
-            Case 2
-                Select Case eloop
-                    Case 0
-                        newExtract.Description = "Active ISA Accounts < 3 Months"
-                    Case 1
-                        newExtract.Description = "Active ISA Accounts < 6 Months"
-                    Case 2
-                        newExtract.Description = "Active ISA Accounts < 12 Months"
-                    Case 3
-                        newExtract.Description = "Active ISA Accounts > 12 Months"
-                End Select
+                iTotal += ncount
 
+                Extractlist.Add(newExtract)
+            Catch ex As Exception
+            Finally
 
-        End Select
-
-        newExtract.Amount1 = ""
-        newExtract.Amount2 = ""
-        newExtract.Amount3 = ncount
-
-
-
-        Select Case accttype
-            Case 0
-                Select Case eloop
-                    Case 0
-                        tbTATl3.Text = ncount
-                    Case 1
-                        tbTATl6.Text = ncount
-                    Case 2
-                        tbTATl12.Text = ncount
-                    Case 3
-                        tbTATg12.Text = ncount
-                End Select
-
-
-
-            Case 1
-                Select Case eloop
-                    Case 0
-                        tbTASl3.Text = ncount
-                    Case 1
-                        tbTASl6.Text = ncount
-                    Case 2
-                        tbTASl12.Text = ncount
-                    Case 3
-                        tbTASg12.Text = ncount
-                End Select
-
-
-
-            Case 2
-                Select Case eloop
-                    Case 0
-                        tbTAIl3.Text = ncount
-                    Case 1
-                        tbTAIl6.Text = ncount
-                    Case 2
-                        tbTAIl12.Text = ncount
-                    Case 3
-                        tbTAIg12.Text = ncount
-                End Select
-
-
-
-        End Select
-
-        iSumAmount1 += ncount
-
-        iTotal += ncount
-
-        Extractlist.Add(newExtract)
+            End Try
+        End Using
     End Sub
 
     Private Sub SetupTotalVolumesTotal(Extractlist As List(Of Extract))
@@ -867,12 +890,14 @@ Public Class Form1
 
     Private Sub SetupInactiveVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
         Dim MySQL, strConn As String
-        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
-        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
-        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
-        MySQL = "select distinct a.accountid
+
+        Using con As New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString)
+            Try
+                Dim adapter As SqlDataAdapter = New SqlDataAdapter()
+                MySQL = "select distinct a.accountid
                    from users u, accounts a
                    where a.userid = u.userid and 
                      u.activated = 5 and a.activated_bank = 5 
@@ -917,8 +942,8 @@ Public Class Form1
               ( select  max (g.datecreated) as maxdatecreated, g.accountid
                     from get_user_accounts_history g
                     where  g.datecreated < @dt1
-                    group by g.accountid
-                    order by g.accountid   ) vt
+                    group by g.accountid   ) vt
+      
 
                     on a.accountid = vt.accountid
 
@@ -928,58 +953,67 @@ Public Class Form1
                      and a.accounttype = @at1
                      and a.accountid  = vt.accountid)
 
-                group by  a.accountid
-                order by  a.accountid "
+                group by  a.accountid "
 
+                Dim cmd As SqlCommand = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@at1", accttype))
+                    .Add(New SqlParameter("@dt1", enddate))
+                End With
+                adapter.SelectCommand = cmd
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
+                ds1 = New DataSet
 
-        Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
+                adapter.Fill(ds1)
 
-        Adaptor.Fill(ds1)
-        MyConn.Close()
-
-        Dim ncount As Integer = ds1.Tables(0).Rows.Count
-
-
-        Dim newExtract As New Extract
-        Select Case accttype
-            Case 0
-                newExtract.Description = "Total Inactive Trading Accounts"
-            Case 1
-                newExtract.Description = "Total Inactive SIPP Accounts"
-            Case 2
-                newExtract.Description = "Total Inactive ISA Accounts"
-        End Select
-
-        newExtract.Amount1 = ""
-        newExtract.Amount2 = ""
-        newExtract.Amount3 = ncount
+                con.Close()
 
 
 
-        Select Case accttype
-            Case 0
-                tbTIT.Text = ncount
 
-            Case 1
-                tbTIS.Text = ncount
-
-            Case 2
-                tbTII.Text = ncount
-
-        End Select
-
-        iSumAmount1 += ncount
+                Dim ncount As Integer = ds1.Tables(0).Rows.Count
 
 
+                Dim newExtract As New Extract
+                Select Case accttype
+                    Case 0
+                        newExtract.Description = "Total Inactive Trading Accounts"
+                    Case 1
+                        newExtract.Description = "Total Inactive SIPP Accounts"
+                    Case 2
+                        newExtract.Description = "Total Inactive ISA Accounts"
+                End Select
 
-        Extractlist.Add(newExtract)
+                newExtract.Amount1 = ""
+                newExtract.Amount2 = ""
+                newExtract.Amount3 = ncount
+
+
+
+                Select Case accttype
+                    Case 0
+                        tbTIT.Text = ncount
+
+                    Case 1
+                        tbTIS.Text = ncount
+
+                    Case 2
+                        tbTII.Text = ncount
+
+                End Select
+
+                iSumAmount1 += ncount
+
+
+
+                Extractlist.Add(newExtract)
+            Catch ex As Exception
+            Finally
+
+            End Try
+        End Using
     End Sub
 
     Private Sub SetupInactiveVolumesTotal(Extractlist As List(Of Extract))
@@ -1003,12 +1037,14 @@ Public Class Form1
 
     Private Sub SetupUnfundedVolumes(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
         Dim MySQL, strConn As String
-        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
-        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
-        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
-        MySQL = "select distinct a.accountid
+
+        Using con As New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString)
+            Try
+                Dim adapter As SqlDataAdapter = New SqlDataAdapter()
+                MySQL = "select distinct a.accountid
                    from users u, accounts a
                    where a.userid = u.userid and 
                      u.activated = 5 and a.activated_bank = 5 
@@ -1036,55 +1072,65 @@ Public Class Form1
                 group by  a.accountid
                 order by  a.accountid "
 
+                Dim cmd As SqlCommand = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@at1", accttype))
+                    .Add(New SqlParameter("@dt1", enddate))
+                End With
+                adapter.SelectCommand = cmd
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
+                ds1 = New DataSet
 
-        Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
+                adapter.Fill(ds1)
 
-        Adaptor.Fill(ds1)
-        MyConn.Close()
-
-        Dim ncount As Integer = ds1.Tables(0).Rows.Count
-
-
-        Dim newExtract As New Extract
-        Select Case accttype
-            Case 0
-                newExtract.Description = "Total Unfunded Trading Accounts"
-            Case 1
-                newExtract.Description = "Total Unfunded SIPP Accounts"
-            Case 2
-                newExtract.Description = "Total Unfunded ISA Accounts"
-        End Select
-
-        newExtract.Amount1 = ""
-        newExtract.Amount2 = ""
-        newExtract.Amount3 = ncount
+                con.Close()
 
 
 
-        Select Case accttype
-            Case 0
-                tbTUT.Text = ncount
 
-            Case 1
-                tbTUS.Text = ncount
-
-            Case 2
-                tbTUI.Text = ncount
-
-        End Select
-
-        iSumAmount1 += ncount
+                Dim ncount As Integer = ds1.Tables(0).Rows.Count
 
 
+                Dim newExtract As New Extract
+                Select Case accttype
+                    Case 0
+                        newExtract.Description = "Total Unfunded Trading Accounts"
+                    Case 1
+                        newExtract.Description = "Total Unfunded SIPP Accounts"
+                    Case 2
+                        newExtract.Description = "Total Unfunded ISA Accounts"
+                End Select
 
-        Extractlist.Add(newExtract)
+                newExtract.Amount1 = ""
+                newExtract.Amount2 = ""
+                newExtract.Amount3 = ncount
+
+
+
+                Select Case accttype
+                    Case 0
+                        tbTUT.Text = ncount
+
+                    Case 1
+                        tbTUS.Text = ncount
+
+                    Case 2
+                        tbTUI.Text = ncount
+
+                End Select
+
+                iSumAmount1 += ncount
+
+
+
+                Extractlist.Add(newExtract)
+            Catch ex As Exception
+            Finally
+
+            End Try
+        End Using
     End Sub
 
     Private Sub SetupUnfundedVolumesTotal(Extractlist As List(Of Extract))
@@ -1150,25 +1196,6 @@ Public Class Form1
         newExtract.Amount2 = ""
         newExtract.Amount3 = iTotal
 
-
-
-
-        'Select Case accttype
-        '    Case 0
-        '        tbMAT.Text = iTotal
-
-        '    Case 1
-        '        tbMAS.Text = iTotal
-
-        '    Case 2
-        '        tbMAI.Text = iTotal
-
-        'End Select
-
-
-
-
-
         Extractlist.Add(newExtract)
     End Sub
 
@@ -1176,24 +1203,25 @@ Public Class Form1
 
     Private Sub SetupMandatesVolumesBkdn(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date, nTotal As Integer)
         Dim MySQL, strConn As String
-        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
-        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
-        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
         Dim eSQL1, eSQL2 As String
-        If accttype = 9 Then
-            eSQL1 = " not "
-            eSQL2 = " "
-        Else
-            eSQL2 = " and a.accounttype = @at1 "
-            eSQL1 = " "
-        End If
-        MySQL = "select distinct a.accountid
+        Using con As New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString)
+            Try
+                Dim adapter As SqlDataAdapter = New SqlDataAdapter()
+                If accttype = 9 Then
+                    eSQL1 = " not "
+                    eSQL2 = " "
+                Else
+                    eSQL2 = " and a.accounttype = @at1 "
+                    eSQL1 = " "
+                End If
+                MySQL = "select distinct a.accountid
                 from mandates m, accounts a , users u
                    where m.accountid = a.accountid
                   and  m.isactive = 0 " & eSQL2 &
-                 " and a.userid = u.userid and
+                         " and a.userid = u.userid and
                      u.activated = 5 and a.activated_bank = 5 
                      and u.isactive = 0  And  u.usertype = 0
 
@@ -1229,80 +1257,87 @@ Public Class Form1
                 group by  a.accountid
                 order by  a.accountid  "
 
+                Dim cmd As SqlCommand = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@at1", accttype))
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
+                End With
+                adapter.SelectCommand = cmd
 
-        Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
-        'Adaptor.SelectCommand.Parameters.Add("@sql1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = eSQL1
-        'Adaptor.SelectCommand.Parameters.Add("@sql2", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = eSQL2
+                ds1 = New DataSet
 
-        Adaptor.Fill(ds1)
-        MyConn.Close()
+                adapter.Fill(ds1)
 
-        Dim ncount As Integer = ds1.Tables(0).Rows.Count
-
-
-        Dim newExtract As New Extract
-        Select Case accttype
-            Case 0
-
-                newExtract.Description = "Active Trading Mandates - Currently Lending"
+                con.Close()
 
 
-            Case 1
-
-                newExtract.Description = "Active SIPP Mandates - Currently Lending"
+                Dim ncount As Integer = ds1.Tables(0).Rows.Count
 
 
-            Case 2
+                Dim newExtract As New Extract
+                Select Case accttype
+                    Case 0
 
-                newExtract.Description = "Active ISA Mandates - Currently Lending"
-
-            Case 9
-
-                newExtract.Description = "Active Mandates -Live No Funds"
-
-        End Select
+                        newExtract.Description = "Active Trading Mandates - Currently Lending"
 
 
-        newExtract.Amount1 = ""
-        newExtract.Amount2 = ""
-        newExtract.Amount3 = ncount
+                    Case 1
 
-        Select Case accttype
-            Case 0
-
-                tbMATg6.Text = ncount
+                        newExtract.Description = "Active SIPP Mandates - Currently Lending"
 
 
+                    Case 2
 
-            Case 1
+                        newExtract.Description = "Active ISA Mandates - Currently Lending"
 
-                tbMASg6.Text = ncount
+                    Case 9
+
+                        newExtract.Description = "Active Mandates -Live No Funds"
+
+                End Select
+
+
+                newExtract.Amount1 = ""
+                newExtract.Amount2 = ""
+                newExtract.Amount3 = ncount
+
+                Select Case accttype
+                    Case 0
+
+                        tbMATg6.Text = ncount
 
 
 
-            Case 2
+                    Case 1
 
-                tbMAIg6.Text = ncount
-
-            Case 9
-                tbMATl6.Text = ncount
-
-        End Select
+                        tbMASg6.Text = ncount
 
 
 
+                    Case 2
 
-        iSumAmount1 += ncount
+                        tbMAIg6.Text = ncount
 
-        iTotal += ncount
+                    Case 9
+                        tbMATl6.Text = ncount
 
-        Extractlist.Add(newExtract)
+                End Select
+
+
+
+
+                iSumAmount1 += ncount
+
+                iTotal += ncount
+
+                Extractlist.Add(newExtract)
+            Catch ex As Exception
+            Finally
+
+            End Try
+        End Using
     End Sub
 
     Private Sub SetupMandatesVolumesTotal(Extractlist As List(Of Extract))
@@ -1328,14 +1363,14 @@ Public Class Form1
     Private Sub SetupActiveMandatesBalance(Extractlist As List(Of Extract), environ As String, connection As String, enddate As Date)
         Dim MySQL, strConn As String
         Dim dAmount As Double
-        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
-        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
-        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
 
-
-        MySQL = "select sum(f.balance) as theamount
+        Using con As New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString)
+            Try
+                Dim adapter As SqlDataAdapter = New SqlDataAdapter()
+                MySQL = "select sum(f.balance) as theamount
                 from (
                  Select            fb.amount  as balance
                    From select_active_accounts a  
@@ -1381,40 +1416,45 @@ Public Class Form1
         where t.amount > 0 )   fb on fb.accountid = a.accountid
                  where fb.accountid = a.accountid    ) f"
 
+                Dim cmd As SqlCommand = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@dt1", enddate))
+
+                End With
+                adapter.SelectCommand = cmd
+
+                ds1 = New DataSet
+
+                adapter.Fill(ds1)
+
+                con.Close()
+
+                Dim nSumm As Double = 0
+                If ds1.Tables(0).Rows.Count > 0 Then
+                    With ds1.Tables(0).Rows(0)
+                        nSumm = ds1.Tables(0).Rows(0).Item(“theamount”)
+                    End With
+                End If
+                Dim newExtract As New Extract
+
+                newExtract.Description = "TOTAL ACTIVE MANDATES BALANCES"
+                newExtract.Amount1 = ""
+                newExtract.Amount2 = ""
+                newExtract.Amount3 = nSumm
 
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
+                tbTMB.Text = PenceToCurrencyStringPounds(nSumm)
 
 
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
+                Extractlist.Add(newExtract)
 
-        Adaptor.Fill(ds1)
-        MyConn.Close()
+            Catch ex As Exception
+            Finally
 
-        Dim nSumm As Double = 0
-        If ds1.Tables(0).Rows.Count > 0 Then
-            With ds1.Tables(0).Rows(0)
-                nSumm = ds1.Tables(0).Rows(0).Item(“theamount”)
-            End With
-        End If
-        Dim newExtract As New Extract
-
-        newExtract.Description = "TOTAL ACTIVE MANDATES BALANCES"
-        newExtract.Amount1 = ""
-        newExtract.Amount2 = ""
-        newExtract.Amount3 = nSumm
-
-
-        tbTMB.Text = PenceToCurrencyStringPounds(nSumm)
-
-
-        Extractlist.Add(newExtract)
-
-
+            End Try
+        End Using
 
     End Sub
 
@@ -1422,14 +1462,14 @@ Public Class Form1
     Private Sub SetupFreeBalancesValues(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
         Dim MySQL, strConn As String
         Dim dAmount As Double
-        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
-        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
-        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
 
-
-        MySQL = "select sum(f.balance) as theamount
+        Using con As New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString)
+            Try
+                Dim adapter As SqlDataAdapter = New SqlDataAdapter()
+                MySQL = "select sum(f.balance) as theamount
                 from (
                  Select            fb.amount  as balance
                    From select_active_accounts a  
@@ -1467,63 +1507,72 @@ Public Class Form1
                  where fb.accountid = a.accountid
                    and a.accounttype = @at1) f"
 
+                Dim cmd As SqlCommand = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@at1", accttype))
+                    .Add(New SqlParameter("@dt1", enddate))
 
+                End With
+                adapter.SelectCommand = cmd
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
+                ds1 = New DataSet
 
-        Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
+                adapter.Fill(ds1)
 
-        Adaptor.Fill(ds1)
-        MyConn.Close()
-
-        Dim nSumm As Double = 0
-        If ds1.Tables(0).Rows.Count > 0 Then
-            With ds1.Tables(0).Rows(0)
-                nSumm = ds1.Tables(0).Rows(0).Item(“theamount”)
-            End With
-        End If
-
-        Dim newExtract As New Extract
-
-
-        Select Case accttype
-            Case 0
-                newExtract.Description = "Total Trading Account Balances"
-            Case 1
-                newExtract.Description = "Total SIPP Account Balances"
-            Case 2
-                newExtract.Description = "Total ISA Account Balances"
-        End Select
+                con.Close()
 
 
 
-        newExtract.Amount1 = ""
-        newExtract.Amount2 = ""
-        newExtract.Amount3 = nSumm
+                Dim nSumm As Double = 0
+                If ds1.Tables(0).Rows.Count > 0 Then
+                    With ds1.Tables(0).Rows(0)
+                        nSumm = ds1.Tables(0).Rows(0).Item(“theamount”)
+                    End With
+                End If
+
+                Dim newExtract As New Extract
+
+
+                Select Case accttype
+                    Case 0
+                        newExtract.Description = "Total Trading Account Balances"
+                    Case 1
+                        newExtract.Description = "Total SIPP Account Balances"
+                    Case 2
+                        newExtract.Description = "Total ISA Account Balances"
+                End Select
 
 
 
-        Select Case accttype
-            Case 0
-                tbTAB.Text = PenceToCurrencyStringPounds(nSumm)
-
-            Case 1
-                tbSAB.Text = PenceToCurrencyStringPounds(nSumm)
-
-            Case 2
-                tbIAB.Text = PenceToCurrencyStringPounds(nSumm)
-
-        End Select
-
-        iSumAmount1 += nSumm
+                newExtract.Amount1 = ""
+                newExtract.Amount2 = ""
+                newExtract.Amount3 = nSumm
 
 
-        Extractlist.Add(newExtract)
+
+                Select Case accttype
+                    Case 0
+                        tbTAB.Text = PenceToCurrencyStringPounds(nSumm)
+
+                    Case 1
+                        tbSAB.Text = PenceToCurrencyStringPounds(nSumm)
+
+                    Case 2
+                        tbIAB.Text = PenceToCurrencyStringPounds(nSumm)
+
+                End Select
+
+                iSumAmount1 += nSumm
+
+
+                Extractlist.Add(newExtract)
+            Catch ex As Exception
+            Finally
+
+            End Try
+        End Using
     End Sub
 
     Private Sub SetupFreeBalanceTotals(Extractlist As List(Of Extract))
@@ -1548,12 +1597,13 @@ Public Class Form1
     Private Sub SetupLoanBalancesValues(Extractlist As List(Of Extract), environ As String, connection As String, accttype As Integer, enddate As Date)
         Dim MySQL, strConn As String
         Dim dAmount As Double
-        Dim MyConn As FirebirdSql.Data.FirebirdClient.FbConnection
-        Dim Cmd As FirebirdSql.Data.FirebirdClient.FbCommand
-        Dim Adaptor As FirebirdSql.Data.FirebirdClient.FbDataAdapter
+
         Dim dr1, dr2, dr3 As DataRow
         Dim ds1 As DataSet
-        MySQL = "select sum(f.balance) as theamount
+        Using con As New SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString)
+            Try
+                Dim adapter As SqlDataAdapter = New SqlDataAdapter()
+                MySQL = "select sum(f.balance) as theamount
                 from (
                  Select            fb.num_units  as balance
                    From select_active_accounts a  
@@ -1591,63 +1641,72 @@ Public Class Form1
                  where fb.accountid = a.accountid
                    and a.accounttype = @at1) f"
 
+                Dim cmd As SqlCommand = New SqlCommand(MySQL, con)
+                con.Open()
+                cmd.Parameters.Clear()
+                With cmd.Parameters
+                    .Add(New SqlParameter("@at1", accttype))
+                    .Add(New SqlParameter("@dt1", enddate))
 
+                End With
+                adapter.SelectCommand = cmd
 
-        strConn = ConfigurationManager.ConnectionStrings("FBConnectionString").ConnectionString
-        MyConn = New FirebirdSql.Data.FirebirdClient.FbConnection(strConn)
-        MyConn.Open()
-        ds1 = New DataSet
-        Adaptor = New FirebirdSql.Data.FirebirdClient.FbDataAdapter(MySQL, MyConn)
+                ds1 = New DataSet
 
-        Adaptor.SelectCommand.Parameters.Add("@at1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = accttype
-        Adaptor.SelectCommand.Parameters.Add("@dt1", FirebirdSql.Data.FirebirdClient.FbDbType.TimeStamp).Value = enddate
+                adapter.Fill(ds1)
 
-        Adaptor.Fill(ds1)
-        MyConn.Close()
-
-        Dim nSumm As Double = 0
-        If ds1.Tables(0).Rows.Count > 0 Then
-            With ds1.Tables(0).Rows(0)
-                nSumm = ds1.Tables(0).Rows(0).Item(“theamount”)
-            End With
-        End If
-
-        Dim newExtract As New Extract
-
-
-        Select Case accttype
-            Case 0
-                newExtract.Description = "Trading Account Loan Balances"
-            Case 1
-                newExtract.Description = "SIPP Account Loan Balances"
-            Case 2
-                newExtract.Description = "ISA Account Loan Balances"
-        End Select
-
-
-        newExtract.Amount1 = ""
-        newExtract.Amount2 = ""
-        newExtract.Amount3 = nSumm
+                con.Close()
 
 
 
+                Dim nSumm As Double = 0
+                If ds1.Tables(0).Rows.Count > 0 Then
+                    With ds1.Tables(0).Rows(0)
+                        nSumm = ds1.Tables(0).Rows(0).Item(“theamount”)
+                    End With
+                End If
 
-        Select Case accttype
-            Case 0
-                tbTLB.Text = PenceToCurrencyStringPounds(nSumm)
-
-            Case 1
-                tbSLB.Text = PenceToCurrencyStringPounds(nSumm)
-
-            Case 2
-                tbILB.Text = PenceToCurrencyStringPounds(nSumm)
-
-        End Select
-
-        iSumAmount1 += nSumm
+                Dim newExtract As New Extract
 
 
-        Extractlist.Add(newExtract)
+                Select Case accttype
+                    Case 0
+                        newExtract.Description = "Trading Account Loan Balances"
+                    Case 1
+                        newExtract.Description = "SIPP Account Loan Balances"
+                    Case 2
+                        newExtract.Description = "ISA Account Loan Balances"
+                End Select
+
+
+                newExtract.Amount1 = ""
+                newExtract.Amount2 = ""
+                newExtract.Amount3 = nSumm
+
+
+
+
+                Select Case accttype
+                    Case 0
+                        tbTLB.Text = PenceToCurrencyStringPounds(nSumm)
+
+                    Case 1
+                        tbSLB.Text = PenceToCurrencyStringPounds(nSumm)
+
+                    Case 2
+                        tbILB.Text = PenceToCurrencyStringPounds(nSumm)
+
+                End Select
+
+                iSumAmount1 += nSumm
+
+
+                Extractlist.Add(newExtract)
+            Catch ex As Exception
+            Finally
+
+            End Try
+        End Using
     End Sub
 
     Private Sub SetupLoanBalanceTotals(Extractlist As List(Of Extract))
