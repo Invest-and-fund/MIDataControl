@@ -291,7 +291,7 @@ Partial Class Form1
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(99, 13)
         Me.Label20.TabIndex = 45
-        Me.Label20.Text = "New SIPP mndates"
+        Me.Label20.Text = "New SIPP mandates"
         '
         'Label21
         '

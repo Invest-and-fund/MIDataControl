@@ -21,6 +21,20 @@ Public Class Form1
         VerticalScroll.Visible = False
         AutoScroll = True
 
+        Dim s, strConn As String
+        s = ""
+        Dim [Start], [End] As Integer
+        strConn = System.Configuration.ConfigurationManager.ConnectionStrings("SQLConnectionString").ConnectionString.ToUpper
+        [Start] = strConn.IndexOf("DATABASE=", 0) + "DATABASE=".Length
+        [End] = strConn.IndexOf(";", Start)
+        s = strConn.Substring(Start, [End] - Start)
+        If s = "MAIN" Then
+            s = "Live SQL Server"
+        Else
+            s = s + " Server"
+        End If
+        Me.Text = Me.Text + " - " + s
+
         FromDate.Value = DateTime.Today.AddDays(-7)
         ToDate.Value = DateTime.Now
 
@@ -29,7 +43,7 @@ Public Class Form1
         Dim xenddate As String = Replace(senddate.ToString, "/", "")
         TextBox1.Text = "LenderMIDataControl" & xenddate
         TextBox2.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-        LoadingMessage.Text = "Select the range of dates and presas Go"
+        LoadingMessage.Text = "Select the range of dates and press Go"
         Me.Refresh()
     End Sub
 
