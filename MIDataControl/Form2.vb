@@ -70,8 +70,11 @@ Public Class Form2
         Dim ExtractList = New List(Of Extract)
         Dim accttype As Integer
 
-        Dim startdate As Date = FromDate.Value.ToString("yyyy/MM/dd")
-        Dim enddate As Date = ToDate.Value.ToString("yyyy/MM/dd")
+        Dim nstartdate As Date = FromDate.Value.ToString("yyyy/MM/dd")
+        Dim nenddate As Date = ToDate.Value.ToString("yyyy/MM/dd")
+        Dim startdate As Date = New DateTime(nstartdate.Year, nstartdate.Month, nstartdate.Day, 0, 0, 1)
+        Dim enddate As Date = New DateTime(nenddate.Year, nenddate.Month, nenddate.Day, 0, 0, 1)
+
 
 
         Dim environ As String = "L"
@@ -899,23 +902,28 @@ Public Class Form2
 
                 Dim adapter As SqlDataAdapter = New SqlDataAdapter()
 
-                MySQL = "select distinct  vt.accountid
-                    from 
+
+
+                MySQL = "Select distinct  vt.accountid
+                    from
                         (select accountid, max(mi_extract_ID) as maxID
-                          from mi_extract 
-						  where extractdate <= @dt2
-						  and accounttype = @at1
-                        and accountid not in (3163, 3709, 3710, 3711, 3712, 3713)   
-                          and activated = 5 and activated_bank = 5 
-						  and lender_status = @am1 " & SQLX &
-                         " group by accountid) vt 
-						  INNER JOIN
-                          mi_extract as t 
-						  on t.accountid = vt.accountid 
-						  and t.mi_extract_id = vt.maxID
-                              "
-
-
+                          From mi_extract
+                          Where accounttype = @at1
+                        And accountid Not in (3163, 3709, 3710, 3711, 3712, 3713)   
+                          And activated = 5 And activated_bank = 5 
+						  And lender_status =  @am1 " & SQLX &
+						  " group by accountid) vt
+						  INNER Join
+                          
+						  (SELECT        xt.accountid, xt.maxID
+							FROM(SELECT        accountid, MAX(MI_EXTRACT_ID) AS maxID
+                          From MI_EXTRACT
+                          Where extractdate <=  @dt2
+                          GROUP BY accountid) As xt INNER JOIN
+                         MI_EXTRACT AS wt ON wt.accountid = xt.accountid And wt.MI_EXTRACT_ID = xt.maxID) as t
+						  On t.accountid = vt.accountid 
+						  And t.maxid = vt.maxID
+						  order by vt.accountid "
 
 
 
