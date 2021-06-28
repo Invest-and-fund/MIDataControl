@@ -906,13 +906,13 @@ Public Class Form2
 
                 MySQL = "Select distinct  vt.accountid
                     from
-                        (select accountid, max(mi_extract_ID) as maxID
+                        (select accountid, mi_extract_ID as maxID
                           From mi_extract
                           Where accounttype = @at1
                         And accountid Not in (3163, 3709, 3710, 3711, 3712, 3713)   
                           And activated = 5 And activated_bank = 5 
 						  And lender_status =  @am1 " & SQLX &
-						  " group by accountid) vt
+                          " group by accountid, mi_extract_ID) vt
 						  INNER Join
                           
 						  (SELECT        xt.accountid, xt.maxID
